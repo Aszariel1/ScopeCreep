@@ -1,9 +1,20 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Project
+from .models import Project, ProjectCategory
 
 
 def project_create(request):
+    if request.method == 'POST':
+        project = Project.objects.create(
+            name=request.POST.get('name'),
+            project_type=request.POST.get('project_type'),
+            description=request.POST.get('description', ''),
+        )
+        for category_name in Project.DEFAULT_CATEGORIES[project.project_type]:
+            ProjectCategory.objects.create(project=project, category_name=category_name)
+
+        return redirect('projects:artist_workspace', token_artist=project.token_artist)
+
     return render(request, 'projects/home.html')
 
 

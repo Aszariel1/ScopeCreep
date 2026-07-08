@@ -1,6 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="max-w-xl mx-auto mt-16">
-    <h1 class="text-2xl font-bold">ScopeCreep</h1>
+    <h1 class="text-2xl font-bold mb-6">Proiect nou</h1>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-sm font-medium mb-1">Nume proiect</label>
+            <input type="text" name="name" required class="w-full border rounded px-3 py-2">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Tip proiect</label>
+            <select name="project_type" required class="w-full border rounded px-3 py-2">
+                <option value="3d_art">3D Art</option>
+                <option value="graphic_design">Graphic Design</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Descriere</label>
+            <textarea name="description" rows="4" class="w-full border rounded px-3 py-2"></textarea>
+        </div>
+
+        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded">Creeaza proiect</button>
+    </form>
 </div>
-{% endblock %}
+{% endblock content %}
