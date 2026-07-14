@@ -1,0 +1,5 @@
+.category-card.is-selected { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35), 3px 3px 8px var(--shadow-dark), -3px -3px 8px var(--shadow-light); }
+.status-pending { background-color: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.status-approved { background-color: rgba(52, 211, 153, 0.15); color: #34d399; }
+.status-reject { background-color: rgba(248, 113, 113, 0.15); color: #f87171; }
+.status-archived { background-color: rgba(156, 163, 175, 0.15); color: #9ca3af; }

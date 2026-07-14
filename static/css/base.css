@@ -1,0 +1,45 @@
+:root {
+    --bg: #1c1c1c;
+    --bg-light: #262626;
+    --shadow-dark: #101010;
+    --shadow-light: #2e2e2e;
+}
+
+body {
+    background: linear-gradient(160deg, #1e1e1e 0%, #141414 100%);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 3px 3px 8px var(--shadow-dark), -3px -3px 8px var(--shadow-light), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.neu-btn {
+    background: var(--bg-light);
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.neu-btn:hover {
+    box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+}
+
+.neu-btn:active, .neu-btn.is-active {
+    box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+    transform: translateY(1px);
+}
+
+.neu-input {
+    background: var(--bg);
+    box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.neu-input:focus {
+    outline: none;
+    box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light), 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
