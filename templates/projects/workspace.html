@@ -1,6 +1,87 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-4xl mx-auto mt-16">
-    <h1 class="text-2xl font-bold">{{ project.name }} — workspace</h1>
+<div class="max-w-4xl mx-auto mt-12 px-4">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-white">{{ project.name }}</h1>
+        <p class="text-gray-400">{{ project.get_project_type_display }}</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        {% for category in project.categories.all %}
+        <button class="category-card glass-card rounded-2xl px-4 py-6 text-left hover:-translate-y-0.5 transition" data-target="log-{{ category.id }}">
+            <span class="font-medium text-gray-100">{{ category.category_name }}</span>
+            <span class="block text-xs text-gray-400 mt-1">{{ category.change_requests.count }} request{{ category.change_requests.count|pluralize }}</span>
+        </button>
+        {% endfor %}
+    </div>
+
+    {% for category in project.categories.all %}
+    <div id="log-{{ category.id }}" class="category-log hidden glass-card rounded-2xl p-4 mb-4">
+        <h2 class="font-semibold mb-3 text-gray-100">{{ category.category_name }}</h2>
+        {% for change_request in category.change_requests.all %}
+        <div class="flex items-center justify-between border-b border-white/10 last:border-0 py-2 text-sm gap-4">
+            <span class="flex-1 text-gray-200">{{ change_request.description }}</span>
+            <span class="text-gray-400 whitespace-nowrap">{{ change_request.extra_cost }} eur / {{ change_request.extra_hours }} h</span>
+            <span class="status-badge status-{{ change_request.status }} text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap">{{ change_request.get_status_display }}</span>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 text-sm">No project yet.</p>
+        {% endfor %}
+
+        <form method="post" action="{% url 'projects:add_change_request' project.token_artist category.id %}" class="flex flex-wrap gap-2 mt-4">
+            {% csrf_token %}
+            <input type="text" name="description" placeholder="Descriere cerere" required class="neu-input rounded-xl px-3 py-2 text-sm text-gray-100 flex-1 min-w-[140px]">
+            <input type="number" name="extra_cost" placeholder="Cost extra (eur)" step="0.01" min="0" class="neu-input rounded-xl px-3 py-2 text-sm text-gray-100 w-36">
+            <input type="number" name="extra_hours" placeholder="Ore extra" step="0.01" min="0" class="neu-input rounded-xl px-3 py-2 text-sm text-gray-100 w-28">
+            <button type="submit" class="neu-btn rounded-xl px-4 py-2 text-sm text-gray-100">Adauga</button>
+        </form>
+    </div>
+    {% endfor %}
 </div>
-{% endblock %}
+
+<style>
+.category-card.is-selected { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35), 3px 3px 8px var(--shadow-dark), -3px -3px 8px var(--shadow-light); }
+.status-pending { background-color: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.status-approved { background-color: rgba(52, 211, 153, 0.15); color: #34d399; }
+.status-reject { background-color: rgba(248, 113, 113, 0.15); color: #f87171; }
+.status-archived { background-color: rgba(156, 163, 175, 0.15); color: #9ca3af; }
+</style>
+
+<script>
+{% if request.GET.new %}
+(function () {
+    var token = '{{ project.token_artist }}';
+    var stored = JSON.parse(localStorage.getItem('scopecreep_projects') || '[]');
+    if (!stored.some(function (p) { return p.token === token; })) {
+        stored.push({ name: '{{ project.name|escapejs }}', token: token });
+        localStorage.setItem('scopecreep_projects', JSON.stringify(stored));
+    }
+    history.replaceState(null, '', window.location.pathname);
+})();
+{% endif %}
+
+function openCategory(categoryId) {
+    document.querySelectorAll('.category-log').forEach(function (log) {
+        log.classList.add('hidden');
+    });
+    document.querySelectorAll('.category-card').forEach(function (c) {
+        c.classList.remove('is-selected');
+    });
+    var log = document.getElementById('log-' + categoryId);
+    var card = document.querySelector('.category-card[data-target="log-' + categoryId + '"]');
+    if (log) log.classList.remove('hidden');
+    if (card) card.classList.add('is-selected');
+}
+
+document.querySelectorAll('.category-card').forEach(function (card) {
+    card.addEventListener('click', function () {
+        openCategory(card.dataset.target.replace('log-', ''));
+    });
+});
+
+{% if request.GET.open %}
+openCategory('{{ request.GET.open }}');
+history.replaceState(null, '', window.location.pathname);
+{% endif %}
+</script>
+{% endblock content %}

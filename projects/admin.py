@@ -15,5 +15,5 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(ChangeRequest)
 class ChangeRequestAdmin(admin.ModelAdmin):
-    list_display = ('project_cat', 'status', 'extra_cost', 'extra_hours', 'creation_date')
-    list_filter = ('status',)
+    list_display = ('project', 'project_cat', 'status', 'extra_cost', 'extra_hours', 'creation_date')
+    list_filter = ('status', 'project')

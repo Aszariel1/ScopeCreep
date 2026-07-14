@@ -1,29 +1,67 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-xl mx-auto mt-16">
-    <h1 class="text-2xl font-bold mb-6">Proiect nou</h1>
+<div class="max-w-xl mx-auto mt-12 px-4">
+    <div id="active-projects" class="mb-8"></div>
 
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
-        <div>
-            <label class="block text-sm font-medium mb-1">Nume proiect</label>
-            <input type="text" name="name" required class="w-full border rounded px-3 py-2">
-        </div>
+    <div class="glass-card rounded-2xl p-6">
+        <h1 class="text-xl font-bold mb-6 text-white">Proiect nou</h1>
 
-        <div>
-            <label class="block text-sm font-medium mb-1">Tip proiect</label>
-            <select name="project_type" required class="w-full border rounded px-3 py-2">
-                <option value="3d_art">3D Art</option>
-                <option value="graphic_design">Graphic Design</option>
-            </select>
-        </div>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-300">Nume proiect</label>
+                <input type="text" name="name" required class="neu-input w-full rounded-xl px-3 py-2 text-gray-100">
+            </div>
 
-        <div>
-            <label class="block text-sm font-medium mb-1">Descriere</label>
-            <textarea name="description" rows="4" class="w-full border rounded px-3 py-2"></textarea>
-        </div>
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-300">Tip proiect</label>
+                <select name="project_type" required class="neu-input w-full rounded-xl px-3 py-2 text-gray-100">
+                    <option value="3d_art">3D Art</option>
+                    <option value="graphic_design">Graphic Design</option>
+                </select>
+            </div>
 
-        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded">Creeaza proiect</button>
-    </form>
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-300">Descriere</label>
+                <textarea name="description" rows="4" class="neu-input w-full rounded-xl px-3 py-2 text-gray-100"></textarea>
+            </div>
+
+            <button type="submit" class="neu-btn w-full text-gray-100 px-4 py-2 rounded-xl font-medium">Creeaza proiect</button>
+        </form>
+    </div>
 </div>
+
+<script>
+(function () {
+    var stored = JSON.parse(localStorage.getItem('scopecreep_projects') || '[]');
+    if (!stored.length) return;
+
+    var container = document.getElementById('active-projects');
+    container.className += ' glass-card rounded-2xl';
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'w-full flex items-center justify-between px-4 py-3 font-semibold text-gray-100';
+    toggle.innerHTML = '<span>Active projects</span><span class="chevron transition-transform text-gray-400">&#9662;</span>';
+    container.appendChild(toggle);
+
+    var list = document.createElement('div');
+    list.className = 'space-y-2 hidden px-4 pb-4';
+
+    stored.forEach(function (p) {
+        var link = document.createElement('a');
+        link.href = '/artist/' + p.token + '/';
+        link.className = 'neu-btn block rounded-xl px-3 py-2 text-gray-200';
+        link.textContent = p.name;
+        list.appendChild(link);
+    });
+
+    toggle.addEventListener('click', function () {
+        list.classList.toggle('hidden');
+        toggle.querySelector('.chevron').classList.toggle('rotate-180');
+    });
+
+    container.appendChild(list);
+})();
+</script>
 {% endblock content %}

@@ -10,7 +10,7 @@ class Project(models.Model):
 
     DEFAULT_CATEGORIES = {
         ProjectType.THREE_D_ART: ['Mesh', 'Textures', 'Rigging'],
-        ProjectType.GRAPHIC_DESIGN: ['Typography', 'Layout'],
+        ProjectType.GRAPHIC_DESIGN: ['Typography', 'Layout', 'Branding', 'Logo-type'],
     }
 
     name = models.CharField(max_length=200)
@@ -41,6 +41,7 @@ class ChangeRequest(models.Model):
         REJECTED = 'reject', 'Reject'
         ARCHIVED = 'archived', 'Archived'
 
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='change_requests')
     project_cat = models.ForeignKey(ProjectCategory, on_delete=models.CASCADE, related_name='change_requests')
     description = models.TextField()
     extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
