@@ -33,6 +33,14 @@ class ProjectCategory(models.Model):
     def __str__(self):
         return f'{self.project.name} - {self.category_name}'
 
+    @property
+    def approved_cost(self):
+        return sum(cr.extra_cost for cr in self.change_requests.all() if cr.status == 'approved')
+
+    @property
+    def approved_hours(self):
+        return sum(cr.extra_hours for cr in self.change_requests.all() if cr.status == 'approved')
+
 
 class ChangeRequest(models.Model):
     class Status(models.TextChoices):
@@ -51,3 +59,12 @@ class ChangeRequest(models.Model):
 
     def __str__(self):
         return f'{self.project_cat} - {self.description[:30]}'
+
+
+class DraftImage(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='draft_images')
+    image = models.ImageField(upload_to='drafts/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.project.name} - draft {self.id}'

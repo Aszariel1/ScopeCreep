@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ChangeRequest, Project, ProjectCategory
+from .models import ChangeRequest, DraftImage, Project, ProjectCategory
 
 
 @admin.register(Project)
@@ -17,3 +17,8 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
 class ChangeRequestAdmin(admin.ModelAdmin):
     list_display = ('project', 'project_cat', 'status', 'extra_cost', 'extra_hours', 'creation_date')
     list_filter = ('status', 'project')
+
+
+@admin.register(DraftImage)
+class DraftImageAdmin(admin.ModelAdmin):
+    list_display = ('project', 'uploaded_at')
