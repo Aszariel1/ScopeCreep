@@ -3,12 +3,13 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}ScopeCreep{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="text-gray-100 min-h-screen">
+<body class="text-gray-100 min-h-screen overflow-x-hidden">
     <header class="glass-card !rounded-none !border-x-0 !border-t-0">
         <div class="max-w-4xl mx-auto px-4 py-4">
             <a href="/" class="text-lg font-bold tracking-tight text-white">ScopeCreep</a>

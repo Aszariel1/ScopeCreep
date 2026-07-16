@@ -7,27 +7,53 @@
 .stack-card {
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
+    left: 50%;
+    width: 62%;
     will-change: transform, opacity;
 }
 
-.category-log { max-height: 18rem; overflow-y: auto; }
-.category-log.is-collapsed { display: none; }
-
-.category-chevron.is-collapsed { transform: rotate(-90deg); }
-
-.stack-card.is-active .category-card,
-.stack-card.is-active .category-log {
-    background: rgba(20, 20, 20, 0.94);
+.category-log {
+    max-height: 22rem;
+    overflow-y: auto;
+    background: rgb(20, 20, 20);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
 }
 
-.artboard-scroll, .category-log { scrollbar-width: none; -ms-overflow-style: none; }
-.artboard-scroll::-webkit-scrollbar, .category-log::-webkit-scrollbar { display: none; }
+.category-chevron.is-collapsed { transform: rotate(-90deg); }
 
-.status-pending { background-color: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-.status-approved { background-color: rgba(52, 211, 153, 0.15); color: #34d399; }
-.status-reject { background-color: rgba(248, 113, 113, 0.15); color: #f87171; }
-.status-archived { background-color: rgba(156, 163, 175, 0.15); color: #9ca3af; }
+.stack-card.is-active {
+    background: rgb(20, 20, 20);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.stack-card:not(.is-active) {
+    background: rgba(30, 30, 30, 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.artboard-scroll, .category-log, .brief-gallery { scrollbar-width: none; -ms-overflow-style: none; }
+.artboard-scroll::-webkit-scrollbar, .category-log::-webkit-scrollbar, .brief-gallery::-webkit-scrollbar { display: none; }
+
+.brief-gallery { max-height: 20rem; overflow-y: auto; }
+
+.brief-tab {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding: 1.25rem 0.5rem;
+    min-height: 14rem;
+}
+
+@media (max-width: 767px) {
+    .stack-card { width: 82%; }
+
+    .brief-tab {
+        writing-mode: horizontal-tb;
+        min-height: 0;
+        width: 100%;
+        padding: 0.6rem 1rem;
+        letter-spacing: 0.15em;
+    }
+}

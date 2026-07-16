@@ -16,9 +16,11 @@
 
     var stackWrap = document.getElementById('category-stack');
     var stackCards = stackWrap ? Array.prototype.slice.call(stackWrap.querySelectorAll('.stack-card')) : [];
+    var logPanels = Array.prototype.slice.call(document.querySelectorAll('.category-log-panel'));
     var count = stackCards.length;
     var current = 0;
     var dragProgress = 0;
+    var logCollapsed = false;
 
     if (openCategoryId) {
         var idx = stackCards.findIndex(function (c) { return c.dataset.categoryId === openCategoryId; });
@@ -35,34 +37,39 @@
         return diff - dragProgress;
     }
 
+    function peekFactor() {
+        if (!stackWrap || !stackCards.length) return 0.19;
+        var width = stackWrap.offsetWidth;
+        var cardWidth = stackCards[0].offsetWidth;
+        return width > 0 ? Math.max(0, (width - cardWidth) / 2) / width : 0.19;
+    }
+
     function render(animated) {
+        var factor = peekFactor();
         stackCards.forEach(function (card, i) {
             var offset = shortestOffset(i);
-            var clamped = Math.max(-2.5, Math.min(2.5, offset));
+            var clamped = Math.max(-1, Math.min(1, offset));
             var width = stackWrap.offsetWidth;
-            var translateX = clamped * width * 0.52;
-            var scale = 1 - Math.min(Math.abs(clamped), 2) * 0.12;
-            var rotate = clamped * -14;
-            var opacity = Math.max(0, 1 - Math.abs(clamped) * 0.55);
-            var z = Math.round(100 - Math.abs(clamped) * 10);
+            var translateX = clamped * width * factor;
             var isActive = Math.abs(offset) < 0.5;
+            var proximity = Math.max(0, 1 - Math.max(0, Math.abs(offset) - 1));
+            var opacity = isActive ? 1 : 0.88 * proximity;
+            var z = Math.round(100 - Math.abs(clamped) * 10);
 
             card.style.transition = animated ? 'transform 0.35s ease, opacity 0.35s ease' : 'none';
-            card.style.transform = 'translateX(' + translateX + 'px) scale(' + scale + ') rotateY(' + rotate + 'deg)';
+            card.style.transform = 'translateX(calc(-50% + ' + translateX + 'px))';
             card.style.opacity = isActive ? '1' : String(opacity);
             card.style.zIndex = String(z);
             card.style.pointerEvents = isActive ? 'auto' : 'none';
             card.classList.toggle('is-active', isActive);
         });
-    }
 
-    function toggleCollapse(cardButton) {
-        var log = cardButton.parentElement.querySelector('.category-log');
-        var chevron = cardButton.querySelector('.category-chevron');
-        if (!log) return;
-        log.classList.toggle('is-collapsed');
-        if (chevron) chevron.classList.toggle('is-collapsed');
-        measureHeight();
+        logPanels.forEach(function (panel, i) {
+            panel.classList.toggle('hidden', !(i === current && !logCollapsed));
+        });
+
+        var activeChevron = stackCards[current] && stackCards[current].querySelector('.category-chevron');
+        if (activeChevron) activeChevron.classList.toggle('is-collapsed', logCollapsed);
     }
 
     function measureHeight() {
@@ -76,10 +83,41 @@
         return ((index % count) + count) % count;
     }
 
+    var briefPanel = document.getElementById('brief-panel');
+    var briefTab = document.getElementById('brief-tab');
+    var briefCollapse = document.getElementById('brief-collapse');
+
+    function onBriefToggle() {
+        if (!stackWrap || !count) return;
+        render(false);
+        measureHeight();
+    }
+
+    if (briefCollapse) {
+        briefCollapse.addEventListener('click', function () {
+            briefPanel.classList.add('hidden');
+            briefTab.classList.remove('hidden');
+            briefTab.classList.add('flex');
+            onBriefToggle();
+        });
+    }
+
+    if (briefTab) {
+        briefTab.addEventListener('click', function () {
+            briefTab.classList.add('hidden');
+            briefTab.classList.remove('flex');
+            briefPanel.classList.remove('hidden');
+            onBriefToggle();
+        });
+    }
+
     if (stackWrap && count) {
         render(false);
         measureHeight();
-        window.addEventListener('resize', measureHeight);
+        window.addEventListener('resize', function () {
+            render(false);
+            measureHeight();
+        });
 
         var dragging = false;
         var startX = 0;
@@ -104,7 +142,7 @@
                 axisLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
             }
             if (axisLocked !== 'x') return;
-            dragProgress = dragStartProgress - dx / (stackWrap.offsetWidth * 0.52);
+            dragProgress = dragStartProgress - dx / (stackWrap.offsetWidth * peekFactor());
             render(false);
         });
 
@@ -114,14 +152,29 @@
 
             if (axisLocked === 'x') {
                 var steps = Math.round(dragProgress);
-                if (steps !== 0) current = wrap(current + steps);
+                if (steps !== 0) {
+                    current = wrap(current + steps);
+                    logCollapsed = false;
+                }
                 dragProgress = 0;
                 render(true);
                 measureHeight();
             } else if (axisLocked === null) {
                 dragProgress = 0;
                 var cardButton = event && event.target.closest('.category-card');
-                if (cardButton) toggleCollapse(cardButton);
+                if (cardButton) {
+                    var tappedIndex = stackCards.indexOf(cardButton);
+                    if (tappedIndex !== -1) {
+                        if (tappedIndex === current) {
+                            logCollapsed = !logCollapsed;
+                        } else {
+                            current = tappedIndex;
+                            logCollapsed = false;
+                        }
+                        render(true);
+                        measureHeight();
+                    }
+                }
             } else {
                 dragProgress = 0;
                 render(true);
@@ -145,11 +198,20 @@
         });
     });
 
-    document.addEventListener('click', function () {
+    document.addEventListener('click', function (event) {
         document.querySelectorAll('.status-form').forEach(function (f) {
-            f.classList.add('hidden');
+            if (!f.contains(event.target)) f.classList.add('hidden');
         });
     });
+
+    var addCategoryToggle = document.getElementById('add-category-toggle');
+    var addCategoryForm = document.getElementById('add-category-form');
+
+    if (addCategoryToggle) {
+        addCategoryToggle.addEventListener('click', function () {
+            addCategoryForm.classList.toggle('hidden');
+        });
+    }
 
     var shareToggle = document.getElementById('share-toggle');
     var shareBox = document.getElementById('share-box');

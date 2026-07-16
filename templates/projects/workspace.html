@@ -4,15 +4,15 @@
 <div id="workspace-root" class="max-w-5xl mx-auto mt-12 px-4"
      data-token="{{ project.token_artist }}" data-name="{{ project.name }}"
      data-new="{{ request.GET.new }}" data-open="{{ request.GET.open }}">
-    <div class="mb-8 flex items-start justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-white">{{ project.name }}</h1>
+    <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-bold text-white break-words">{{ project.name }}</h1>
             <p class="text-gray-400">{{ project.get_project_type_display }}</p>
             <div class="mt-3">
                 <button type="button" id="share-toggle" class="neu-btn text-xs px-3 py-1.5 rounded-lg text-gray-200">Share cu clientul</button>
-                <div id="share-box" class="hidden mt-2 flex items-center gap-2">
-                    <input type="text" readonly id="share-link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'projects:client_view' project.token_client %}" class="neu-input rounded-lg px-2 py-1 text-xs text-gray-300 w-64">
-                    <button type="button" id="share-copy" class="neu-btn text-xs px-2 py-1 rounded-lg text-gray-200">Copiaza</button>
+                <div id="share-box" class="hidden mt-2 flex flex-wrap items-center gap-2">
+                    <input type="text" readonly id="share-link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'projects:client_view' project.token_client %}" class="neu-input rounded-lg px-2 py-1 text-xs text-gray-300 w-full sm:w-64">
+                    <button type="button" id="share-copy" class="neu-btn text-xs px-2 py-1 rounded-lg text-gray-200 shrink-0">Copiaza</button>
                 </div>
             </div>
         </div>
@@ -22,10 +22,56 @@
         </div>
     </div>
 
-    <div class="stack-viewport relative overflow-hidden mb-10" id="category-stack">
-        {% for category in project.categories.all %}
-            <div class="stack-card" data-category-id="{{ category.id }}" data-index="{{ forloop.counter0 }}">
-                <button type="button" class="category-card glass-card rounded-2xl px-4 py-6 text-left w-full mb-4 flex items-center justify-between">
+    <div class="flex flex-col md:flex-row items-stretch md:items-start gap-4 mb-10">
+        <button type="button" id="brief-tab" class="brief-tab hidden neu-btn shrink-0 rounded-full items-center justify-center text-gray-300 text-xs font-bold tracking-widest">BRIEF</button>
+
+        <div id="brief-panel" class="glass-card rounded-2xl p-4 w-full md:w-64 shrink-0">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-bold text-gray-500 tracking-wider">PROJECT BRIEF</p>
+                <div class="flex gap-1 shrink-0">
+                    <form method="post" action="{% url 'projects:upload_draft_image' project.token_artist %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label class="neu-btn w-7 h-7 rounded-full flex items-center justify-center text-gray-200 cursor-pointer text-base leading-none" title="Adauga imagine">
+                            +
+                            <input type="file" name="image" accept="image/*" class="hidden" onchange="this.form.submit()">
+                        </label>
+                    </form>
+                    <button type="button" id="brief-collapse" class="neu-btn w-7 h-7 rounded-full flex items-center justify-center text-gray-300 text-sm">&#8249;</button>
+                </div>
+            </div>
+
+            {% if project.description %}
+            <p class="text-sm text-gray-300 mb-4 whitespace-pre-line">{{ project.description }}</p>
+            {% else %}
+            <p class="text-sm text-gray-600 mb-4 italic">Nicio descriere.</p>
+            {% endif %}
+
+            <div class="brief-gallery grid grid-cols-2 gap-2">
+                {% for draft in project.draft_images.all %}
+                <button type="button" class="artboard-thumb aspect-square rounded-xl overflow-hidden border border-white/10" data-full="{{ draft.image.url }}">
+                    <img src="{{ draft.image.url }}" alt="" class="w-full h-full object-cover">
+                </button>
+                {% empty %}
+                <div class="col-span-2 aspect-video rounded-xl border border-dashed border-white/15 flex items-center justify-center text-gray-600">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="flex-1 min-w-0">
+            <div class="flex justify-end mb-2">
+                <button type="button" id="add-category-toggle" class="neu-btn text-xs px-3 py-1.5 rounded-lg text-gray-200">+ Categorie</button>
+            </div>
+            <form id="add-category-form" method="post" action="{% url 'projects:add_category' project.token_artist %}" class="hidden mb-3 flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="category_name" placeholder="Nume categorie" required class="neu-input rounded-xl px-3 py-2 text-sm text-gray-100 flex-1">
+                <button type="submit" class="neu-btn rounded-xl px-4 py-2 text-sm text-gray-100">Adauga</button>
+            </form>
+
+            <div class="stack-viewport relative overflow-hidden mb-4" id="category-stack">
+                {% for category in project.categories.all %}
+                <button type="button" class="stack-card category-card glass-card rounded-2xl px-4 py-6 text-left flex items-center justify-between" data-category-id="{{ category.id }}" data-index="{{ forloop.counter0 }}">
                     <span>
                         <span class="font-medium text-gray-100">{{ category.category_name }}</span>
                         <span class="block text-xs text-gray-400 mt-1">{{ category.change_requests.count }} request{{ category.change_requests.count|pluralize }}</span>
@@ -33,21 +79,29 @@
                     </span>
                     <span class="category-chevron text-gray-400 transition-transform">&#9662;</span>
                 </button>
+                {% endfor %}
+            </div>
 
+            {% for category in project.categories.all %}
+            <div class="category-log-panel{% if not forloop.first %} hidden{% endif %}" data-category-id="{{ category.id }}">
                 <div class="category-log glass-card rounded-2xl p-4">
                     {% for change_request in category.change_requests.all %}
-                    <div class="flex items-center justify-between border-b border-white/10 last:border-0 py-2 text-sm gap-4">
+                    <div class="flex flex-wrap items-center justify-between border-b border-white/10 last:border-0 py-2 text-sm gap-2 sm:gap-4">
                         <span class="flex-1 text-gray-200">{{ change_request.description }}</span>
                         <span class="text-gray-400 whitespace-nowrap">{{ change_request.extra_cost }} eur / {{ change_request.extra_hours }} h</span>
                         <div class="status-wrap relative whitespace-nowrap">
                             <button type="button" class="status-toggle status-badge status-{{ change_request.status }} text-xs px-2 py-1 rounded-full font-medium">{{ change_request.get_status_display }}</button>
-                            <form method="post" action="{% url 'projects:update_change_request_status' project.token_artist change_request.id %}" class="status-form hidden absolute right-0 top-full mt-1 z-10">
+                            <form method="post" action="{% url 'projects:update_change_request_status' project.token_artist change_request.id %}" class="status-form hidden absolute right-0 top-full mt-1 z-10 glass-card rounded-xl p-3 flex flex-col gap-2 w-56">
                                 {% csrf_token %}
-                                <select name="status" class="neu-input rounded-lg px-2 py-1 text-xs text-gray-100" onchange="this.form.submit()">
-                                    {% for value, label in status_choices %}
-                                    <option value="{{ value }}" {% if value == change_request.status %}selected{% endif %}>{{ label }}</option>
-                                    {% endfor %}
-                                </select>
+                                <div class="flex gap-2">
+                                    <input type="number" name="extra_cost" value="{{ change_request.extra_cost }}" step="0.01" min="0" placeholder="Cost" class="neu-input rounded-lg px-2 py-1 text-xs text-gray-100 w-1/2">
+                                    <input type="number" name="extra_hours" value="{{ change_request.extra_hours }}" step="0.01" min="0" placeholder="Ore" class="neu-input rounded-lg px-2 py-1 text-xs text-gray-100 w-1/2">
+                                </div>
+                                <div class="flex gap-1">
+                                    <button type="submit" name="status" value="approved" class="neu-btn flex-1 rounded-lg px-2 py-1 text-xs text-emerald-400">Aproba</button>
+                                    <button type="submit" name="status" value="reject" class="neu-btn flex-1 rounded-lg px-2 py-1 text-xs text-red-400">Respinge</button>
+                                    <button type="submit" name="status" value="archived" class="neu-btn flex-1 rounded-lg px-2 py-1 text-xs text-gray-400">Arhiveaza</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -63,27 +117,6 @@
                         <button type="submit" class="neu-btn rounded-xl px-4 py-2 text-sm text-gray-100">Adauga</button>
                     </form>
                 </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <div class="glass-card rounded-2xl p-4 relative">
-        <form method="post" action="{% url 'projects:upload_draft_image' project.token_artist %}" enctype="multipart/form-data" class="absolute top-3 right-3">
-            {% csrf_token %}
-            <label class="neu-btn w-8 h-8 rounded-full flex items-center justify-center text-gray-200 cursor-pointer text-lg leading-none" title="Adauga imagine">
-                +
-                <input type="file" name="image" accept="image/*" class="hidden" onchange="this.form.submit()">
-            </label>
-        </form>
-        <p class="text-xs font-bold text-gray-500 tracking-wider mb-3">ARTBOARD</p>
-        <div class="artboard-scroll flex gap-3 overflow-x-auto pb-1">
-            {% for draft in project.draft_images.all %}
-            <button type="button" class="artboard-thumb shrink-0 w-24 h-24 rounded-xl overflow-hidden border border-white/10" data-full="{{ draft.image.url }}">
-                <img src="{{ draft.image.url }}" alt="" class="w-full h-full object-cover">
-            </button>
-            {% empty %}
-            <div class="shrink-0 w-24 h-24 rounded-xl border border-dashed border-white/15 flex items-center justify-center text-gray-600">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>
             </div>
             {% endfor %}
         </div>

@@ -1,6 +1,109 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<div class="max-w-4xl mx-auto mt-16">
-    <h1 class="text-2xl font-bold">{{ project.name }}</h1>
+<div id="workspace-root" class="max-w-5xl mx-auto mt-12 px-4"
+     data-token="{{ project.token_client }}" data-name="{{ project.name }}"
+     data-open="{{ request.GET.open }}">
+    <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-bold text-white break-words">{{ project.name }}</h1>
+            <p class="text-gray-400">{{ project.get_project_type_display }}</p>
+        </div>
+        <div class="text-right shrink-0">
+            <p class="text-xs font-bold text-gray-500 tracking-wider">TOTAL</p>
+            <p class="font-bold text-lg"><span class="text-emerald-400">{{ project.price }} eur</span> <span class="text-gray-600">/</span> <span class="text-red-400">{{ project.hours }} h</span></p>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row items-stretch md:items-start gap-4 mb-10">
+        <button type="button" id="brief-tab" class="brief-tab hidden neu-btn shrink-0 rounded-full items-center justify-center text-gray-300 text-xs font-bold tracking-widest">BRIEF</button>
+
+        <div id="brief-panel" class="glass-card rounded-2xl p-4 w-full md:w-64 shrink-0">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-bold text-gray-500 tracking-wider">PROJECT BRIEF</p>
+                <button type="button" id="brief-collapse" class="neu-btn w-7 h-7 rounded-full flex items-center justify-center text-gray-300 text-sm">&#8249;</button>
+            </div>
+
+            {% if project.description %}
+            <p class="text-sm text-gray-300 mb-4 whitespace-pre-line">{{ project.description }}</p>
+            {% else %}
+            <p class="text-sm text-gray-600 mb-4 italic">Nicio descriere.</p>
+            {% endif %}
+
+            <div class="brief-gallery grid grid-cols-2 gap-2">
+                {% for draft in project.draft_images.all %}
+                <button type="button" class="artboard-thumb aspect-square rounded-xl overflow-hidden border border-white/10" data-full="{{ draft.image.url }}">
+                    <img src="{{ draft.image.url }}" alt="" class="w-full h-full object-cover">
+                </button>
+                {% empty %}
+                <div class="col-span-2 aspect-video rounded-xl border border-dashed border-white/15 flex items-center justify-center text-gray-600">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="flex-1 min-w-0">
+            <div class="stack-viewport relative overflow-hidden mb-4" id="category-stack">
+                {% for category in project.categories.all %}
+                <button type="button" class="stack-card category-card glass-card rounded-2xl px-4 py-6 text-left flex items-center justify-between" data-category-id="{{ category.id }}" data-index="{{ forloop.counter0 }}">
+                    <span>
+                        <span class="font-medium text-gray-100">{{ category.category_name }}</span>
+                        <span class="block text-xs text-gray-400 mt-1">{{ category.change_requests.count }} request{{ category.change_requests.count|pluralize }}</span>
+                        <span class="block text-xs font-semibold mt-2"><span class="text-emerald-400">{{ category.approved_cost }} eur</span> <span class="text-gray-600">/</span> <span class="text-red-400">{{ category.approved_hours }} h</span></span>
+                    </span>
+                    <span class="category-chevron text-gray-400 transition-transform">&#9662;</span>
+                </button>
+                {% endfor %}
+            </div>
+
+            {% for category in project.categories.all %}
+            <div class="category-log-panel{% if not forloop.first %} hidden{% endif %}" data-category-id="{{ category.id }}">
+                <div class="category-log glass-card rounded-2xl p-4">
+                    {% for change_request in category.change_requests.all %}
+                    <div class="flex flex-wrap items-center justify-between border-b border-white/10 last:border-0 py-2 text-sm gap-2 sm:gap-4">
+                        <span class="flex-1 text-gray-200">{{ change_request.description }}</span>
+                        <span class="text-gray-400 whitespace-nowrap">{{ change_request.extra_cost }} eur / {{ change_request.extra_hours }} h</span>
+                        <span class="status-badge status-{{ change_request.status }} text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap">{{ change_request.get_status_display }}</span>
+                        {% if change_request.status == 'pending' %}
+                            {% if change_request.extra_cost > 0 %}
+                            <form method="post" action="{% url 'projects:client_approve_change_request' project.token_client change_request.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="neu-btn text-xs px-2 py-1 rounded-lg text-gray-100">Aproba</button>
+                            </form>
+                            {% endif %}
+                            <form method="post" action="{% url 'projects:client_cancel_change_request' project.token_client change_request.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="neu-btn text-xs px-2 py-1 rounded-lg text-gray-400">Anuleaza</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-sm">No project yet.</p>
+                    {% endfor %}
+
+                    <form method="post" action="{% url 'projects:client_add_change_request' project.token_client category.id %}" class="flex flex-wrap gap-2 mt-4">
+                        {% csrf_token %}
+                        <input type="text" name="description" placeholder="Cere o modificare" required class="neu-input rounded-xl px-3 py-2 text-sm text-gray-100 flex-1 min-w-[140px]">
+                        <button type="submit" class="neu-btn rounded-xl px-4 py-2 text-sm text-gray-100">Trimite</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="lightbox" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-6">
+    <button type="button" id="lightbox-close" class="neu-btn absolute top-4 right-4 w-9 h-9 rounded-full text-gray-100">&times;</button>
+    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full rounded-xl">
 </div>
 {% endblock content %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/workspace.css' %}">
+{% endblock extra_css %}
+
+{% block extra_js %}
+<script src="{% static 'js/workspace.js' %}" defer></script>
+{% endblock extra_js %}
