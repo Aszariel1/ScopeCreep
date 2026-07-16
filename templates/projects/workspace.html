@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <div class="flex flex-col md:flex-row items-stretch md:items-start gap-4 mb-10">
+    <div class="flex flex-col md:flex-row items-stretch gap-4 mb-10">
         <button type="button" id="brief-tab" class="brief-tab hidden neu-btn shrink-0 rounded-full items-center justify-center text-gray-300 text-xs font-bold tracking-widest">BRIEF</button>
 
         <div id="brief-panel" class="glass-card rounded-2xl p-4 w-full md:w-64 shrink-0">
@@ -59,15 +59,15 @@
             </div>
         </div>
 
-        <div class="flex-1 min-w-0">
-            <div class="flex justify-end mb-2">
-                <button type="button" id="add-category-toggle" class="neu-btn text-xs px-3 py-1.5 rounded-lg text-gray-200">+ Categorie</button>
+        <div class="flex-1 min-w-0 relative">
+            <div class="absolute top-3 right-3 z-[200]">
+                <button type="button" id="add-category-toggle" class="neu-btn w-8 h-8 rounded-full flex items-center justify-center text-gray-200 text-lg leading-none" title="Adauga categorie">+</button>
+                <form id="add-category-form" method="post" action="{% url 'projects:add_category' project.token_artist %}" class="hidden absolute right-0 top-full mt-1 glass-card rounded-xl p-2 flex gap-2 w-56">
+                    {% csrf_token %}
+                    <input type="text" name="category_name" placeholder="Nume categorie" required class="neu-input rounded-lg px-2 py-1 text-xs text-gray-100 flex-1">
+                    <button type="submit" class="neu-btn rounded-lg px-2 py-1 text-xs text-gray-100">Adauga</button>
+                </form>
             </div>
-            <form id="add-category-form" method="post" action="{% url 'projects:add_category' project.token_artist %}" class="hidden mb-3 flex gap-2">
-                {% csrf_token %}
-                <input type="text" name="category_name" placeholder="Nume categorie" required class="neu-input rounded-xl px-3 py-2 text-sm text-gray-100 flex-1">
-                <button type="submit" class="neu-btn rounded-xl px-4 py-2 text-sm text-gray-100">Adauga</button>
-            </form>
 
             <div class="stack-viewport relative overflow-hidden mb-4" id="category-stack">
                 {% for category in project.categories.all %}
@@ -85,6 +85,21 @@
             {% for category in project.categories.all %}
             <div class="category-log-panel{% if not forloop.first %} hidden{% endif %}" data-category-id="{{ category.id }}">
                 <div class="category-log glass-card rounded-2xl p-4">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div class="category-rename-wrap relative">
+                            <button type="button" class="category-rename-toggle neu-btn text-xs px-2 py-1 rounded-lg text-gray-300">Redenumeste</button>
+                            <form method="post" action="{% url 'projects:rename_category' project.token_artist category.id %}" class="category-rename-form hidden absolute left-0 top-full mt-1 z-10 glass-card rounded-xl p-2 flex gap-2 w-56">
+                                {% csrf_token %}
+                                <input type="text" name="category_name" value="{{ category.category_name }}" required class="neu-input rounded-lg px-2 py-1 text-xs text-gray-100 flex-1">
+                                <button type="submit" class="neu-btn rounded-lg px-2 py-1 text-xs text-gray-100">Salveaza</button>
+                            </form>
+                        </div>
+                        <form method="post" action="{% url 'projects:delete_category' project.token_artist category.id %}" onsubmit="return confirm('Stergi categoria &quot;{{ category.category_name }}&quot; si toate cererile din ea? Actiunea nu poate fi anulata.');">
+                            {% csrf_token %}
+                            <button type="submit" class="neu-btn text-xs px-2 py-1 rounded-lg text-red-400">Sterge categorie</button>
+                        </form>
+                    </div>
+
                     {% for change_request in category.change_requests.all %}
                     <div class="flex flex-wrap items-center justify-between border-b border-white/10 last:border-0 py-2 text-sm gap-2 sm:gap-4">
                         <span class="flex-1 text-gray-200">{{ change_request.description }}</span>

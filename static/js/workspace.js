@@ -198,8 +198,19 @@
         });
     });
 
+    document.querySelectorAll('.category-rename-toggle').forEach(function (toggle) {
+        toggle.addEventListener('click', function (event) {
+            event.stopPropagation();
+            var form = toggle.parentElement.querySelector('.category-rename-form');
+            document.querySelectorAll('.category-rename-form').forEach(function (f) {
+                if (f !== form) f.classList.add('hidden');
+            });
+            form.classList.toggle('hidden');
+        });
+    });
+
     document.addEventListener('click', function (event) {
-        document.querySelectorAll('.status-form').forEach(function (f) {
+        document.querySelectorAll('.status-form, .category-rename-form, #add-category-form').forEach(function (f) {
             if (!f.contains(event.target)) f.classList.add('hidden');
         });
     });
@@ -208,7 +219,8 @@
     var addCategoryForm = document.getElementById('add-category-form');
 
     if (addCategoryToggle) {
-        addCategoryToggle.addEventListener('click', function () {
+        addCategoryToggle.addEventListener('click', function (event) {
+            event.stopPropagation();
             addCategoryForm.classList.toggle('hidden');
         });
     }

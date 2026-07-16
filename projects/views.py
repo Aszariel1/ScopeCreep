@@ -66,6 +66,27 @@ def add_category(request, token_artist):
     return redirect(url)
 
 
+def rename_category(request, token_artist, category_id):
+    category = get_object_or_404(ProjectCategory, id=category_id, project__token_artist=token_artist)
+
+    new_name = request.POST.get('category_name', '').strip()
+    if new_name:
+        category.category_name = new_name
+        category.save(update_fields=['category_name'])
+
+    url = reverse('projects:artist_workspace', kwargs={'token_artist': token_artist})
+    return redirect(f'{url}?open={category.id}')
+
+
+def delete_category(request, token_artist, category_id):
+    category = get_object_or_404(ProjectCategory, id=category_id, project__token_artist=token_artist)
+    project = category.project
+    category.delete()
+    recalculate_project_totals(project)
+
+    return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
+
+
 def upload_draft_image(request, token_artist):
     project = get_object_or_404(Project, token_artist=token_artist)
 

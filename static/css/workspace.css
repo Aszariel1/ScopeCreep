@@ -1,7 +1,7 @@
 .stack-viewport {
     perspective: 1400px;
     touch-action: pan-y;
-    padding: 28px 20px;
+    padding: 16px;
 }
 
 .stack-card {
@@ -43,7 +43,6 @@
     writing-mode: vertical-rl;
     text-orientation: mixed;
     padding: 1.25rem 0.5rem;
-    min-height: 14rem;
 }
 
 @media (max-width: 767px) {
