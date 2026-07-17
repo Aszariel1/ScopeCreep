@@ -34,19 +34,14 @@
 .brief-gallery { max-height: 20rem; overflow-y: auto; }
 
 .accordion-tab {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    padding: 1.25rem 0.5rem;
+    align-self: flex-start;
+    letter-spacing: 0.05em;
 }
 
 @media (max-width: 767px) {
     .stack-card { width: 82%; }
 
     .accordion-tab {
-        writing-mode: horizontal-tb;
-        min-height: 0;
         width: 100%;
-        padding: 0.6rem 1rem;
-        letter-spacing: 0.15em;
     }
 }
