@@ -2,6 +2,9 @@
     perspective: 1400px;
     touch-action: pan-y;
     padding: 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
 }
 
 .stack-card {

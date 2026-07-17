@@ -8,7 +8,9 @@
     var toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'w-full flex items-center justify-between px-4 py-3 font-medium text-gray-100';
-    toggle.innerHTML = '<span>Active projects</span><span class="chevron transition-transform text-gray-400">&#9662;</span>';
+    toggle.innerHTML = '<span>Active projects</span><span class="chevron transition-transform text-gray-400">'
+        + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m6 9 6 6 6-6"/></svg>'
+        + '</span>';
     container.appendChild(toggle);
 
     var list = document.createElement('div');
