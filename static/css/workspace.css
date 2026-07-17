@@ -56,6 +56,59 @@
 .shape-bottom.notch-left { border-radius: 12px 0 12px 12px; }
 .shape-bottom.notch-right { border-radius: 0 12px 12px 12px; }
 
+/* Concave flare at the interior notch corner: a quarter-circle that curves
+   the junction toward the pill instead of a sharp step. The pseudo covers
+   the last 12px of shape-top's side border and the bottom border segment,
+   replacing them with an arc whose border follows the radius. */
+.shape-top.flare-l::before,
+.shape-top.flare-r::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 12px;
+    height: 12px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+}
+
+.shape-top.flare-l::before {
+    left: 0;
+    transform: translateX(-100%);
+    border-left: 1px solid var(--border);
+    border-top-left-radius: 12px;
+}
+
+.shape-top.flare-r::before {
+    right: 0;
+    transform: translateX(100%);
+    border-right: 1px solid var(--border);
+    border-top-right-radius: 12px;
+}
+
+/* Accordion pills: interactive affordance */
+#brief-tab, #details-tab {
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+#brief-tab:hover, #details-tab:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+    color: #cbd5e1;
+}
+
+.stack-card.is-active:hover { border-color: var(--border-strong); }
+
+@keyframes panel-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#brief-panel:not(.hidden),
+#details-panel:not(.hidden),
+.category-log-panel:not(.hidden) {
+    animation: panel-in 0.18s ease;
+}
+
 @media (max-width: 767px) {
     .stack-card { width: 82%; }
 }
