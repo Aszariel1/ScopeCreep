@@ -33,15 +33,29 @@
 
 .brief-gallery { max-height: 20rem; overflow-y: auto; }
 
-.accordion-tab {
-    align-self: flex-start;
-    letter-spacing: 0.05em;
+/* Notched panel shape: a rectangle with one top corner cut out where the
+   collapsed pill sits (Figma boolean union of two rounded rects). Built as
+   two pieces sharing bg/border; shape-top overlaps shape-bottom's top border
+   by 1px so only the segment under the pill stays visible. */
+.shape-top {
+    position: relative;
+    z-index: 2;
+    margin-bottom: -1px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
 }
+
+.shape-bottom {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.shape-bottom.notch-left { border-radius: 12px 0 12px 12px; }
+.shape-bottom.notch-right { border-radius: 0 12px 12px 12px; }
 
 @media (max-width: 767px) {
     .stack-card { width: 82%; }
-
-    .accordion-tab {
-        width: 100%;
-    }
 }

@@ -85,32 +85,22 @@
 
     var briefPanel = document.getElementById('brief-panel');
     var briefTab = document.getElementById('brief-tab');
-    var briefCollapse = document.getElementById('brief-collapse');
     var detailsPanel = document.getElementById('details-panel');
     var detailsTab = document.getElementById('details-tab');
-    var detailsCollapse = document.getElementById('details-collapse');
-
-    function setTabVisible(el, visible) {
-        if (!el) return;
-        el.classList.toggle('hidden', !visible);
-        el.classList.toggle('flex', visible);
-    }
+    var briefOpen = false;
 
     function showAccordionPanel(which) {
-        var showBrief = which === 'brief';
-        setTabVisible(briefTab, !showBrief);
-        if (briefPanel) briefPanel.classList.toggle('hidden', !showBrief);
-        setTabVisible(detailsTab, showBrief);
-        if (detailsPanel) detailsPanel.classList.toggle('hidden', showBrief);
+        briefOpen = which === 'brief';
+        if (briefPanel) briefPanel.classList.toggle('hidden', !briefOpen);
+        if (detailsPanel) detailsPanel.classList.toggle('hidden', briefOpen);
+        if (!briefOpen) logCollapsed = false;
         if (!stackWrap || !count) return;
         render(false);
         measureHeight();
     }
 
     if (briefTab) briefTab.addEventListener('click', function () { showAccordionPanel('brief'); });
-    if (briefCollapse) briefCollapse.addEventListener('click', function () { showAccordionPanel('details'); });
     if (detailsTab) detailsTab.addEventListener('click', function () { showAccordionPanel('details'); });
-    if (detailsCollapse) detailsCollapse.addEventListener('click', function () { showAccordionPanel('brief'); });
 
     if (stackWrap && count) {
         render(false);
@@ -167,10 +157,15 @@
                     var tappedIndex = stackCards.indexOf(cardButton);
                     if (tappedIndex !== -1) {
                         if (tappedIndex === current) {
-                            logCollapsed = !logCollapsed;
+                            if (briefOpen) {
+                                showAccordionPanel('details');
+                            } else {
+                                logCollapsed = !logCollapsed;
+                            }
                         } else {
                             current = tappedIndex;
                             logCollapsed = false;
+                            if (briefOpen) showAccordionPanel('details');
                         }
                         render(true);
                         measureHeight();
