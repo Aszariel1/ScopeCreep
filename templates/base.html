@@ -15,7 +15,7 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
                     colors: {
-                        accent: { DEFAULT: '#6366f1', hover: '#4f46e5' }
+                        accent: { DEFAULT: '#48a89a', hover: '#00524d' }
                     }
                 }
             }
@@ -28,11 +28,40 @@
 <body class="text-gray-100 min-h-screen overflow-x-hidden font-sans">
     <header class="card !rounded-none !border-x-0 !border-t-0">
         <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-sm bg-accent shrink-0"></span>
+            <a href="/" class="flex items-center gap-2 shrink-0" aria-label="ScopeCreep">
+                <svg id="logo-mark" viewBox="0 0 638.1 898" class="h-7 w-auto text-accent" xmlns="http://www.w3.org/2000/svg">
+                    <rect fill="currentColor" y="615.9" width="282.1" height="282.1" rx="49.32" ry="49.32"/>
+                    <rect fill="currentColor" x="356" y="0" width="282.1" height="282.1" rx="49.32" ry="49.32"/>
+                    <path fill="currentColor" d="M578.76,489.72h-81.71c-118.81,0-214.95-127.74-214.95-285.58V59.34c0-32.76-26.56-59.34-59.34-59.34H59.34C26.56,0,0,26.57,0,59.34v289.61c0,32.76,26.56,59.34,59.34,59.34h81.71c118.81,0,214.94,127.73,214.94,285.58v144.79c0,32.77,26.57,59.34,59.34,59.34h163.43c32.77,0,59.34-26.56,59.34-59.34v-289.6c0-32.77-26.56-59.34-59.34-59.34Z"/>
+                    <circle id="logo-eye" cx="497.54" cy="750.36" r="92.02" fill="#fff"/>
+                    <circle id="logo-pupil" cx="497.54" cy="750.36" r="40" fill="currentColor" style="transition: cx 0.08s ease-out, cy 0.08s ease-out;"/>
+                </svg>
+            </a>
             <a href="/" class="text-base font-semibold tracking-tight text-white">ScopeCreep</a>
         </div>
     </header>
     {% block content %}{% endblock %}
     {% block extra_js %}{% endblock %}
+    <script>
+        (function () {
+            var eye = document.getElementById('logo-eye');
+            var pupil = document.getElementById('logo-pupil');
+            if (!eye || !pupil) return;
+            var eyeCx = 497.54, eyeCy = 750.36, maxOffset = 30, reachPx = 220;
+
+            window.addEventListener('mousemove', function (e) {
+                var rect = eye.getBoundingClientRect();
+                var originX = rect.left + rect.width / 2;
+                var originY = rect.top + rect.height / 2;
+                var dx = e.clientX - originX;
+                var dy = e.clientY - originY;
+                var angle = Math.atan2(dy, dx);
+                var fraction = Math.min(Math.hypot(dx, dy) / reachPx, 1);
+                var offset = fraction * maxOffset;
+                pupil.setAttribute('cx', (eyeCx + Math.cos(angle) * offset).toFixed(2));
+                pupil.setAttribute('cy', (eyeCy + Math.sin(angle) * offset).toFixed(2));
+            });
+        })();
+    </script>
 </body>
 </html>

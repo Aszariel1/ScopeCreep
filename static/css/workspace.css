@@ -16,6 +16,8 @@
     max-height: 22rem;
     overflow-y: auto;
     background: var(--surface);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .category-chevron.is-collapsed { transform: rotate(-90deg); }
@@ -45,12 +47,16 @@
     border: 1px solid var(--border);
     border-bottom: none;
     border-radius: 12px 12px 0 0;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .shape-bottom {
     background: var(--surface);
     border: 1px solid var(--border);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .shape-bottom.notch-left { border-radius: 12px 0 12px 12px; }

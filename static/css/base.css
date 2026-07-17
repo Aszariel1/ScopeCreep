@@ -1,24 +1,28 @@
 :root {
-    --bg: #0a0b0f;
-    --surface: #111319;
-    --surface-2: #0d0e13;
-    --surface-hover: #191c24;
-    --border: rgba(255, 255, 255, 0.08);
-    --border-strong: rgba(255, 255, 255, 0.16);
+    --bg: #06090a;
+    --surface: rgba(15, 26, 24, 0.55);
+    --surface-2: rgba(9, 16, 15, 0.6);
+    --surface-hover: rgba(26, 42, 39, 0.65);
+    --border: rgba(186, 232, 224, 0.10);
+    --border-strong: rgba(186, 232, 224, 0.20);
     --text-muted: #8b93a1;
     --text-faint: #565d6b;
-    --accent: #6366f1;
-    --accent-hover: #4f46e5;
-    --accent-soft: rgba(99, 102, 241, 0.14);
+    --accent: #48a89a;
+    --accent-hover: #00524d;
+    --accent-soft: rgba(72, 168, 154, 0.16);
 }
 
 body {
-    background: var(--bg);
+    background:
+        radial-gradient(1200px circle at 15% -10%, rgba(0, 82, 77, 0.35), transparent 60%),
+        radial-gradient(900px circle at 100% 100%, rgba(72, 168, 154, 0.12), transparent 55%),
+        var(--bg);
+    background-attachment: fixed;
     font-feature-settings: "cv11", "ss01";
 }
 
 ::selection {
-    background: rgba(99, 102, 241, 0.35);
+    background: rgba(72, 168, 154, 0.35);
     color: #fff;
 }
 
@@ -31,6 +35,8 @@ button:focus-visible, a:focus-visible, label:focus-visible {
     background: var(--surface);
     border: 1px solid var(--border);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .num {
