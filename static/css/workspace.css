@@ -33,7 +33,7 @@
 
 .brief-gallery { max-height: 20rem; overflow-y: auto; }
 
-.brief-tab {
+.accordion-tab {
     writing-mode: vertical-rl;
     text-orientation: mixed;
     padding: 1.25rem 0.5rem;
@@ -42,7 +42,7 @@
 @media (max-width: 767px) {
     .stack-card { width: 82%; }
 
-    .brief-tab {
+    .accordion-tab {
         writing-mode: horizontal-tb;
         min-height: 0;
         width: 100%;

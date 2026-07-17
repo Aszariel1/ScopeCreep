@@ -16,9 +16,9 @@
     </div>
 
     <div class="flex flex-col md:flex-row items-stretch gap-4 mb-10">
-        <button type="button" id="brief-tab" class="brief-tab hidden btn shrink-0 rounded-full items-center justify-center text-gray-300 text-xs font-semibold tracking-widest">BRIEF</button>
+        <button type="button" id="brief-tab" class="accordion-tab btn shrink-0 rounded-full flex items-center justify-center text-gray-300 text-xs font-semibold tracking-widest">BRIEF</button>
 
-        <div id="brief-panel" class="card rounded-xl p-4 w-full md:w-64 shrink-0">
+        <div id="brief-panel" class="hidden card rounded-xl p-4 w-full md:w-64 shrink-0">
             <div class="flex items-center justify-between mb-3">
                 <p class="text-xs font-semibold text-gray-500 tracking-wider">PROJECT BRIEF</p>
                 <button type="button" id="brief-collapse" class="btn w-7 h-7 rounded-full flex items-center justify-center text-gray-300" title="Collapse">{% include "icons/chevron-left.html" with cls="w-3.5 h-3.5" %}</button>
@@ -43,7 +43,12 @@
             </div>
         </div>
 
-        <div class="flex-1 min-w-0">
+        <button type="button" id="details-tab" class="accordion-tab hidden btn shrink-0 rounded-full items-center justify-center text-gray-300 text-xs font-semibold tracking-widest">DETAILS</button>
+
+        <div id="details-panel" class="flex-1 min-w-0 relative">
+            <div class="absolute top-3 right-3 z-[200]">
+                <button type="button" id="details-collapse" class="btn w-8 h-8 rounded-full flex items-center justify-center text-gray-300" title="Collapse">{% include "icons/chevron-left.html" with cls="w-3.5 h-3.5" %}</button>
+            </div>
             <div class="stack-viewport relative overflow-hidden mb-4" id="category-stack">
                 {% for category in project.categories.all %}
                 <button type="button" class="stack-card category-card card rounded-xl px-4 py-6 text-left flex items-center justify-between" data-category-id="{{ category.id }}" data-index="{{ forloop.counter0 }}">
