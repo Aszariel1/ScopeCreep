@@ -21,9 +21,14 @@ class Project(models.Model):
     token_artist = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     token_client = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     data_creare = models.DateTimeField(auto_now_add=True)
+    estimated_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.name
+
+    @property
+    def pending_count(self):
+        return sum(1 for cat in self.categories.all() for cr in cat.change_requests.all() if cr.status == 'pending')
 
 
 class ProjectCategory(models.Model):

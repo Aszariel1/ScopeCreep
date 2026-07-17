@@ -4,30 +4,30 @@
 <div class="max-w-xl mx-auto mt-12 px-4">
     <div id="active-projects" class="mb-8"></div>
 
-    <div class="glass-card rounded-2xl p-6">
-        <h1 class="text-xl font-bold mb-6 text-white">Proiect nou</h1>
+    <div class="card rounded-xl p-6">
+        <h1 class="text-xl font-semibold mb-6 text-white tracking-tight">New project</h1>
 
         <form method="post" class="space-y-4">
             {% csrf_token %}
             <div>
-                <label class="block text-sm font-medium mb-1 text-gray-300">Nume proiect</label>
-                <input type="text" name="name" required class="neu-input w-full rounded-xl px-3 py-2 text-gray-100">
+                <label class="block text-sm font-medium mb-1 text-gray-300">Project name</label>
+                <input type="text" name="name" required class="field w-full rounded-lg px-3 py-2 text-gray-100">
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1 text-gray-300">Tip proiect</label>
-                <select name="project_type" required class="neu-input w-full rounded-xl px-3 py-2 text-gray-100">
+                <label class="block text-sm font-medium mb-1 text-gray-300">Project type</label>
+                <select name="project_type" required class="field w-full rounded-lg px-3 py-2 text-gray-100">
                     <option value="3d_art">3D Art</option>
                     <option value="graphic_design">Graphic Design</option>
                 </select>
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1 text-gray-300">Descriere</label>
-                <textarea name="description" rows="4" class="neu-input w-full rounded-xl px-3 py-2 text-gray-100"></textarea>
+                <label class="block text-sm font-medium mb-1 text-gray-300">Description</label>
+                <textarea name="description" rows="4" class="field w-full rounded-lg px-3 py-2 text-gray-100"></textarea>
             </div>
 
-            <button type="submit" class="neu-btn w-full text-gray-100 px-4 py-2 rounded-xl font-medium">Creeaza proiect</button>
+            <button type="submit" class="btn-primary w-full px-4 py-2 rounded-lg font-medium">Create project</button>
         </form>
     </div>
 </div>

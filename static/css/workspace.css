@@ -15,23 +15,17 @@
 .category-log {
     max-height: 22rem;
     overflow-y: auto;
-    background: rgb(20, 20, 20);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    background: var(--surface);
 }
 
 .category-chevron.is-collapsed { transform: rotate(-90deg); }
 
 .stack-card.is-active {
-    background: rgb(20, 20, 20);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    background: var(--surface);
 }
 
 .stack-card:not(.is-active) {
-    background: rgba(30, 30, 30, 0.92);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    background: var(--surface-2);
 }
 
 .artboard-scroll, .category-log, .brief-gallery { scrollbar-width: none; -ms-overflow-style: none; }

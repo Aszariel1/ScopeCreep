@@ -210,10 +210,31 @@
     });
 
     document.addEventListener('click', function (event) {
-        document.querySelectorAll('.status-form, .category-rename-form, #add-category-form').forEach(function (f) {
+        document.querySelectorAll('.status-form, .category-rename-form, #add-category-form, #notif-panel, #calendar-panel').forEach(function (f) {
             if (!f.contains(event.target)) f.classList.add('hidden');
         });
     });
+
+    var notifToggle = document.getElementById('notif-toggle');
+    var notifPanel = document.getElementById('notif-panel');
+    var calendarToggle = document.getElementById('calendar-toggle');
+    var calendarPanel = document.getElementById('calendar-panel');
+
+    if (notifToggle) {
+        notifToggle.addEventListener('click', function (event) {
+            event.stopPropagation();
+            if (calendarPanel) calendarPanel.classList.add('hidden');
+            notifPanel.classList.toggle('hidden');
+        });
+    }
+
+    if (calendarToggle) {
+        calendarToggle.addEventListener('click', function (event) {
+            event.stopPropagation();
+            if (notifPanel) notifPanel.classList.add('hidden');
+            calendarPanel.classList.toggle('hidden');
+        });
+    }
 
     var addCategoryToggle = document.getElementById('add-category-toggle');
     var addCategoryForm = document.getElementById('add-category-form');
@@ -242,7 +263,7 @@
             shareLink.select();
             navigator.clipboard.writeText(shareLink.value).then(function () {
                 var original = shareCopy.textContent;
-                shareCopy.textContent = 'Copiat!';
+                shareCopy.textContent = 'Copied!';
                 setTimeout(function () { shareCopy.textContent = original; }, 1500);
             });
         });

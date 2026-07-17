@@ -87,6 +87,14 @@ def delete_category(request, token_artist, category_id):
     return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
 
 
+def set_estimated_date(request, token_artist):
+    project = get_object_or_404(Project, token_artist=token_artist)
+    project.estimated_date = request.POST.get('estimated_date') or None
+    project.save(update_fields=['estimated_date'])
+
+    return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
+
+
 def upload_draft_image(request, token_artist):
     project = get_object_or_404(Project, token_artist=token_artist)
 
