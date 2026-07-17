@@ -259,12 +259,17 @@
     }
 
     if (shareCopy) {
+        var shareCopyIcon = shareCopy.innerHTML;
+        var checkIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 shrink-0"><path d="M20 6 9 17l-5-5"/></svg>';
         shareCopy.addEventListener('click', function () {
             shareLink.select();
             navigator.clipboard.writeText(shareLink.value).then(function () {
-                var original = shareCopy.textContent;
-                shareCopy.textContent = 'Copied!';
-                setTimeout(function () { shareCopy.textContent = original; }, 1500);
+                shareCopy.title = 'Copied!';
+                shareCopy.innerHTML = checkIcon;
+                setTimeout(function () {
+                    shareCopy.title = 'Copy link';
+                    shareCopy.innerHTML = shareCopyIcon;
+                }, 1500);
             });
         });
     }

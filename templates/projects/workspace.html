@@ -12,7 +12,7 @@
                 <button type="button" id="share-toggle" class="btn text-xs px-3 py-1.5 rounded-lg text-gray-200 inline-flex items-center gap-1.5">{% include "icons/link.html" with cls="w-3.5 h-3.5" %}Share with client</button>
                 <div id="share-box" class="hidden mt-2 flex flex-wrap items-center gap-2">
                     <input type="text" readonly id="share-link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'projects:client_view' project.token_client %}" class="field rounded-lg px-2 py-1 text-xs text-gray-300 w-full sm:w-64">
-                    <button type="button" id="share-copy" class="btn text-xs px-2 py-1 rounded-lg text-gray-200 shrink-0 inline-flex items-center gap-1.5">{% include "icons/copy.html" with cls="w-3.5 h-3.5" %}Copy</button>
+                    <button type="button" id="share-copy" class="btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-200 shrink-0" title="Copy link">{% include "icons/copy.html" with cls="w-3.5 h-3.5" %}</button>
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
                 <form id="add-category-form" method="post" action="{% url 'projects:add_category' project.token_artist %}" class="hidden absolute right-0 top-full mt-1 card rounded-lg p-2 flex gap-2 w-56 max-w-[90vw]">
                     {% csrf_token %}
                     <input type="text" name="category_name" placeholder="Category name" required class="field rounded-lg px-2 py-1 text-xs text-gray-100 flex-1">
-                    <button type="submit" class="btn-primary rounded-lg px-2 py-1 text-xs inline-flex items-center gap-1 shrink-0">{% include "icons/plus.html" with cls="w-3 h-3" %}Add</button>
+                    <button type="submit" class="btn-primary rounded-lg px-2 py-1 text-xs shrink-0" title="Add category">{% include "icons/plus.html" with cls="w-3 h-3" %}</button>
                 </form>
             </div>
 
@@ -89,16 +89,16 @@
                         <h2 class="text-sm font-semibold text-gray-100 truncate">{{ category.category_name }}</h2>
                         <div class="flex items-center gap-1 shrink-0">
                             <div class="category-rename-wrap relative">
-                                <button type="button" class="category-rename-toggle btn text-xs px-2 py-1 rounded-lg text-gray-300 inline-flex items-center gap-1.5">{% include "icons/pencil.html" with cls="w-3.5 h-3.5" %}Rename</button>
+                                <button type="button" class="category-rename-toggle btn w-7 h-7 rounded-lg flex items-center justify-center text-gray-300" title="Rename">{% include "icons/pencil.html" with cls="w-3.5 h-3.5" %}</button>
                                 <form method="post" action="{% url 'projects:rename_category' project.token_artist category.id %}" class="category-rename-form hidden absolute right-0 top-full mt-1 z-10 card rounded-lg p-2 flex gap-2 w-56 max-w-[90vw]">
                                     {% csrf_token %}
                                     <input type="text" name="category_name" value="{{ category.category_name }}" required class="field rounded-lg px-2 py-1 text-xs text-gray-100 flex-1">
-                                    <button type="submit" class="btn-primary rounded-lg px-2 py-1 text-xs inline-flex items-center gap-1 shrink-0">{% include "icons/check.html" with cls="w-3 h-3" %}Save</button>
+                                    <button type="submit" class="btn-primary rounded-lg px-2 py-1 text-xs shrink-0" title="Save">{% include "icons/check.html" with cls="w-3 h-3" %}</button>
                                 </form>
                             </div>
                             <form method="post" action="{% url 'projects:delete_category' project.token_artist category.id %}" onsubmit="return confirm('Delete category &quot;{{ category.category_name }}&quot; and all its requests? This action cannot be undone.');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn text-xs px-2 py-1 rounded-lg text-red-400 inline-flex items-center gap-1.5">{% include "icons/trash.html" with cls="w-3.5 h-3.5" %}Delete category</button>
+                                <button type="submit" class="btn w-7 h-7 rounded-lg flex items-center justify-center text-red-400" title="Delete category">{% include "icons/trash.html" with cls="w-3.5 h-3.5" %}</button>
                             </form>
                         </div>
                     </div>
