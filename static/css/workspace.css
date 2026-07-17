@@ -56,33 +56,31 @@
 .shape-bottom.notch-left { border-radius: 12px 0 12px 12px; }
 .shape-bottom.notch-right { border-radius: 0 12px 12px 12px; }
 
-/* Concave flare at the interior notch corner: a quarter-circle that curves
-   the junction toward the pill instead of a sharp step. The pseudo covers
-   the last 12px of shape-top's side border and the bottom border segment,
-   replacing them with an arc whose border follows the radius. */
+/* Concave fillet at the interior notch corner: instead of a 90-degree step,
+   the band's side edge sweeps smoothly into the lower panel's top edge,
+   curving toward the pill. A radial gradient bites a transparent
+   quarter-circle out of the corner square and draws a 1px arc that lands
+   tangent on both straight borders. The 13px box overlaps each border by
+   1px so the straight segments it replaces are covered. */
 .shape-top.flare-l::before,
 .shape-top.flare-r::before {
     content: "";
     position: absolute;
     bottom: 0;
-    width: 12px;
-    height: 12px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
+    width: 13px;
+    height: 13px;
 }
 
 .shape-top.flare-l::before {
-    left: 0;
-    transform: translateX(-100%);
-    border-left: 1px solid var(--border);
-    border-top-left-radius: 12px;
+    left: -13px;
+    background: radial-gradient(circle 13px at top left,
+        transparent 11.5px, var(--border) 12px, var(--border) 13px, var(--surface) 13px);
 }
 
 .shape-top.flare-r::before {
-    right: 0;
-    transform: translateX(100%);
-    border-right: 1px solid var(--border);
-    border-top-right-radius: 12px;
+    right: -13px;
+    background: radial-gradient(circle 13px at top right,
+        transparent 11.5px, var(--border) 12px, var(--border) 13px, var(--surface) 13px);
 }
 
 /* Accordion pills: interactive affordance */
