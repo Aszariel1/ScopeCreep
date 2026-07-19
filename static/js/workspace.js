@@ -206,7 +206,7 @@
     });
 
     document.addEventListener('click', function (event) {
-        document.querySelectorAll('.status-form, .category-rename-form, #add-category-form, #notif-panel, #calendar-panel').forEach(function (f) {
+        document.querySelectorAll('.status-form, .category-rename-form, #add-category-form, #notif-panel, #calendar-panel, #deleted-panel').forEach(function (f) {
             if (!f.contains(event.target)) f.classList.add('hidden');
         });
     });
@@ -215,20 +215,35 @@
     var notifPanel = document.getElementById('notif-panel');
     var calendarToggle = document.getElementById('calendar-toggle');
     var calendarPanel = document.getElementById('calendar-panel');
+    var deletedToggle = document.getElementById('deleted-toggle');
+    var deletedPanel = document.getElementById('deleted-panel');
+    var allPanels = [notifPanel, calendarPanel, deletedPanel];
+
+    function toggleExclusive(panel) {
+        allPanels.forEach(function (p) {
+            if (p && p !== panel) p.classList.add('hidden');
+        });
+        panel.classList.toggle('hidden');
+    }
 
     if (notifToggle) {
         notifToggle.addEventListener('click', function (event) {
             event.stopPropagation();
-            if (calendarPanel) calendarPanel.classList.add('hidden');
-            notifPanel.classList.toggle('hidden');
+            toggleExclusive(notifPanel);
         });
     }
 
     if (calendarToggle) {
         calendarToggle.addEventListener('click', function (event) {
             event.stopPropagation();
-            if (notifPanel) notifPanel.classList.add('hidden');
-            calendarPanel.classList.toggle('hidden');
+            toggleExclusive(calendarPanel);
+        });
+    }
+
+    if (deletedToggle) {
+        deletedToggle.addEventListener('click', function (event) {
+            event.stopPropagation();
+            toggleExclusive(deletedPanel);
         });
     }
 

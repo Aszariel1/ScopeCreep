@@ -28,12 +28,13 @@ class Project(models.Model):
 
     @property
     def pending_count(self):
-        return sum(1 for cat in self.categories.all() for cr in cat.change_requests.all() if cr.status == 'pending')
+        return sum(1 for cat in self.categories.all() if not cat.deleted_at for cr in cat.change_requests.all() if cr.status == 'pending')
 
 
 class ProjectCategory(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='categories')
     category_name = models.CharField(max_length=100)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.project.name} - {self.category_name}'
@@ -51,7 +52,7 @@ class ChangeRequest(models.Model):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Pending'
         APPROVED = 'approved', 'Approved'
-        REJECTED = 'reject', 'Reject'
+        REJECTED = 'reject', 'Rejected'
         ARCHIVED = 'archived', 'Archived'
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='change_requests')
@@ -60,7 +61,9 @@ class ChangeRequest(models.Model):
     extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     extra_hours = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    artist_note = models.CharField(max_length=200, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
+    accepted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.project_cat} - {self.description[:30]}'

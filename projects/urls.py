@@ -11,11 +11,12 @@ urlpatterns = [
     path('artist/<uuid:token_artist>/category/<int:category_id>/change-request/', views.add_change_request, name='add_change_request'),
     path('artist/<uuid:token_artist>/category/<int:category_id>/rename/', views.rename_category, name='rename_category'),
     path('artist/<uuid:token_artist>/category/<int:category_id>/delete/', views.delete_category, name='delete_category'),
+    path('artist/<uuid:token_artist>/category/<int:category_id>/restore/', views.restore_category, name='restore_category'),
     path('artist/<uuid:token_artist>/change-request/<int:change_request_id>/status/', views.update_change_request_status, name='update_change_request_status'),
     path('artist/<uuid:token_artist>/draft-image/', views.upload_draft_image, name='upload_draft_image'),
-    path('artist/<uuid:token_artist>/estimated-date/', views.set_estimated_date, name='set_estimated_date'),
     path('client/<uuid:token_client>/', views.client_view, name='client_view'),
     path('client/<uuid:token_client>/category/<int:category_id>/change-request/', views.client_add_change_request, name='client_add_change_request'),
     path('client/<uuid:token_client>/change-request/<int:change_request_id>/approve/', views.client_approve_change_request, name='client_approve_change_request'),
     path('client/<uuid:token_client>/change-request/<int:change_request_id>/cancel/', views.client_cancel_change_request, name='client_cancel_change_request'),
+    path('scope/<uuid:token>/export/', views.export_pdf, name='export_pdf'),
 ]

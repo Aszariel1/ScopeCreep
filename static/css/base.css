@@ -92,3 +92,18 @@ button:focus-visible, a:focus-visible, label:focus-visible {
 .status-approved { background-color: rgba(52, 211, 153, 0.12); color: #34d399; }
 .status-reject { background-color: rgba(248, 113, 113, 0.12); color: #f87171; }
 .status-archived { background-color: rgba(139, 147, 161, 0.12); color: #8b93a1; }
+
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+.rise-in { animation: rise-in 0.3s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

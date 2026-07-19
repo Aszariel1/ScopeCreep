@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="max-w-xl mx-auto mt-12 px-4">
+<div class="rise-in max-w-xl mx-auto mt-12 px-4 pb-12">
     <div id="active-projects" class="mb-8"></div>
 
     <div class="card rounded-xl p-6">
-        <h1 class="text-xl font-semibold mb-6 text-white tracking-tight">New project</h1>
+        <h1 class="text-xl font-semibold mb-1 text-white tracking-tight">New project</h1>
+        <p class="text-sm text-gray-500 mb-6">Log client change requests and keep every extra billable.</p>
 
         <form method="post" class="space-y-4">
             {% csrf_token %}

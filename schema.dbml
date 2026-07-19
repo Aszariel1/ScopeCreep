@@ -1,0 +1,28 @@
+Table projects_project {
+  id integer [pk, increment]
+  name varchar(200)
+  project_type varchar(20)
+  description text
+  price decimal
+  hours decimal
+  token_artist char(32) [unique]
+  token_client char(32) [unique]
+  data_creare datetime
+}
+
+Table projects_projectcategory {
+  id integer [pk, increment]
+  category_name varchar(100)
+  project_id bigint [ref: > projects_project.id]
+}
+
+Table projects_changerequest {
+  id integer [pk, increment]
+  description text
+  extra_cost decimal
+  extra_hours decimal
+  status varchar(20)
+  creation_date datetime
+  project_cat_id bigint [ref: > projects_projectcategory.id]
+  project_id bigint [ref: > projects_project.id]
+}

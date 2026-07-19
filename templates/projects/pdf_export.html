@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ project.name }} — scope</title>
+<style>
+    @page {
+        size: A4;
+        margin: 2cm;
+    }
+    body {
+        font-family: Helvetica, sans-serif;
+        color: #1a1a1a;
+        font-size: 10pt;
+    }
+    h1 {
+        font-size: 18pt;
+        margin-bottom: 2px;
+    }
+    .subtitle {
+        color: #666666;
+        margin-bottom: 14px;
+    }
+    .meta {
+        margin-bottom: 18px;
+        color: #444444;
+    }
+    .meta strong {
+        color: #1a1a1a;
+    }
+    .description {
+        margin-bottom: 20px;
+        white-space: pre-line;
+    }
+    h2 {
+        font-size: 12pt;
+        margin-top: 20px;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #cccccc;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 4px;
+    }
+    th, td {
+        text-align: left;
+        padding: 5px 4px;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 9pt;
+    }
+    th {
+        color: #666666;
+        font-weight: normal;
+        text-transform: uppercase;
+        font-size: 8pt;
+    }
+    .col-cost {
+        text-align: right;
+        white-space: nowrap;
+        width: 70px;
+    }
+    .col-status {
+        white-space: nowrap;
+        width: 70px;
+    }
+    .note {
+        color: #888888;
+        font-style: italic;
+        font-size: 8pt;
+    }
+    .empty {
+        color: #999999;
+        font-style: italic;
+    }
+    .total-box {
+        margin-top: 24px;
+        padding-top: 10px;
+        border-top: 2px solid #1a1a1a;
+        text-align: right;
+    }
+    .total-box .label {
+        color: #666666;
+        font-size: 8pt;
+        text-transform: uppercase;
+    }
+    .total-box .value {
+        font-size: 14pt;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+    <h1>{{ project.name }}</h1>
+    <p class="subtitle">{{ project.get_project_type_display }}</p>
+
+    <p class="meta">
+        <strong>Date generated:</strong> {% now "d M Y" %}
+        {% if project.estimated_date %} &nbsp;|&nbsp; <strong>Estimated completion:</strong> {{ project.estimated_date|date:"d M Y" }}{% endif %}
+    </p>
+
+    {% if project.description %}
+    <p class="description">{{ project.description }}</p>
+    {% endif %}
+
+    {% for category in categories %}
+    <h2>{{ category.category_name }}</h2>
+    {% if category.change_requests.all %}
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th class="col-status">Status</th>
+                <th class="col-cost">Cost</th>
+                <th class="col-cost">Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for change_request in category.change_requests.all %}
+            <tr>
+                <td>
+                    {{ change_request.description }}
+                    {% if change_request.artist_note %}<br><span class="note">{{ change_request.artist_note }}</span>{% endif %}
+                </td>
+                <td class="col-status">{{ change_request.get_status_display }}</td>
+                <td class="col-cost">{{ change_request.extra_cost|floatformat:"-2" }} eur</td>
+                <td class="col-cost">{{ change_request.extra_hours|floatformat:"-2" }} h</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No requests logged.</p>
+    {% endif %}
+    {% endfor %}
+
+    <div class="total-box">
+        <div class="label">Total approved</div>
+        <div class="value">{{ project.price|floatformat:"-2" }} eur / {{ project.hours|floatformat:"-2" }} h</div>
+    </div>
+</body>
+</html>
