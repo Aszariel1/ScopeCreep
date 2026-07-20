@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'projects',
 ]
 
@@ -153,5 +154,22 @@ STORAGES = {
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Cloudflare R2 (S3-compatible) storage for user-uploaded media. Render's own
+# disk is wiped on every deploy, so uploads need to live somewhere durable.
+# Falls back to the local filesystem above when R2 isn't configured (e.g. local dev).
+R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID')
+if R2_ACCESS_KEY_ID:
+    STORAGES['default'] = {'BACKEND': 'storages.backends.s3.S3Storage'}
+
+    AWS_ACCESS_KEY_ID = R2_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = os.environ['R2_SECRET_ACCESS_KEY']
+    AWS_STORAGE_BUCKET_NAME = os.environ['R2_BUCKET_NAME']
+    AWS_S3_ENDPOINT_URL = os.environ['R2_ENDPOINT_URL']
+    AWS_S3_CUSTOM_DOMAIN = os.environ['R2_PUBLIC_DOMAIN']
+    AWS_S3_ADDRESSING_STYLE = 'virtual'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_QUERYSTRING_AUTH = False
+    AWS_DEFAULT_ACL = None
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
