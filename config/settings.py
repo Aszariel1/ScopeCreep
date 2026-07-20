@@ -45,6 +45,8 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
+X_FRAME_OPTIONS = 'ALLOWALL'
+
 
 # Application definition
 
