@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.text import slugify
 
 
 class Project(models.Model):
@@ -69,9 +70,14 @@ class ChangeRequest(models.Model):
         return f'{self.project_cat} - {self.description[:30]}'
 
 
+def draft_image_upload_to(instance, filename):
+    folder = slugify(instance.project.name) or 'project'
+    return f'drafts/{instance.project_id}-{folder}/{filename}'
+
+
 class DraftImage(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='draft_images')
-    image = models.ImageField(upload_to='drafts/')
+    image = models.ImageField(upload_to=draft_image_upload_to)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
