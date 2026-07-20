@@ -17,11 +17,30 @@
     list.className = 'space-y-2 hidden px-4 pb-4';
 
     stored.forEach(function (p) {
+        var row = document.createElement('div');
+        row.className = 'flex items-center gap-2';
+
         var link = document.createElement('a');
         link.href = '/artist/' + p.token + '/';
-        link.className = 'btn block rounded-lg px-3 py-2 text-gray-200';
+        link.className = 'btn flex-1 min-w-0 truncate rounded-lg px-3 py-2 text-gray-200';
         link.textContent = p.name;
-        list.appendChild(link);
+        row.appendChild(link);
+
+        var removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn w-9 h-9 rounded-lg flex items-center justify-center text-red-400 shrink-0';
+        removeBtn.title = 'Remove from this list';
+        removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0">'
+            + '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>';
+        removeBtn.addEventListener('click', function () {
+            if (!confirm('Remove "' + p.name + '" from this list? The project itself stays intact, you just lose the shortcut.')) return;
+            var updated = JSON.parse(localStorage.getItem('scopecreep_projects') || '[]').filter(function (item) { return item.token !== p.token; });
+            localStorage.setItem('scopecreep_projects', JSON.stringify(updated));
+            row.remove();
+        });
+        row.appendChild(removeBtn);
+
+        list.appendChild(row);
     });
 
     toggle.addEventListener('click', function () {

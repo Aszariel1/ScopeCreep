@@ -128,6 +128,14 @@ def upload_draft_image(request, token_artist):
     return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
 
 
+def delete_draft_image(request, token_artist, image_id):
+    draft = get_object_or_404(DraftImage, id=image_id, project__token_artist=token_artist)
+    draft.image.delete(save=False)
+    draft.delete()
+
+    return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
+
+
 def update_change_request_status(request, token_artist, change_request_id):
     change_request = get_object_or_404(
         ChangeRequest, id=change_request_id, project__token_artist=token_artist,

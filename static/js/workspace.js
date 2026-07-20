@@ -257,7 +257,7 @@
         document.querySelectorAll('.status-form').forEach(function (f) {
             if (!f.contains(event.target)) closeStatusForm(f);
         });
-        document.querySelectorAll('.category-rename-form, #add-category-form, #notif-panel, #calendar-panel, #deleted-panel').forEach(function (f) {
+        document.querySelectorAll('.category-rename-form, #add-category-form, #notif-panel, #calendar-panel, #deleted-panel, #share-box').forEach(function (f) {
             if (!f.contains(event.target)) f.classList.add('hidden');
         });
     });
