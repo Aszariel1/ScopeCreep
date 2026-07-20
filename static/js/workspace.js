@@ -183,15 +183,63 @@
         });
     }
 
-    document.querySelectorAll('.status-toggle').forEach(function (toggle) {
+    var statusFormHome = new WeakMap();
+
+    function positionStatusForm(toggle, form) {
+        var rect = toggle.getBoundingClientRect();
+        var width = form.offsetWidth;
+        var left = Math.min(Math.max(8, rect.right - width), window.innerWidth - width - 8);
+        var top = rect.bottom + 4;
+        if (top + form.offsetHeight > window.innerHeight - 8) {
+            top = Math.max(8, rect.top - form.offsetHeight - 4);
+        }
+        form.style.position = 'fixed';
+        form.style.right = 'auto';
+        form.style.left = left + 'px';
+        form.style.top = top + 'px';
+    }
+
+    function closeStatusForm(form) {
+        if (form.classList.contains('hidden')) return;
+        form.classList.add('hidden');
+        form.style.position = '';
+        form.style.top = '';
+        form.style.left = '';
+        form.style.right = '';
+        var home = statusFormHome.get(form);
+        if (home) home.appendChild(form);
+    }
+
+    document.querySelectorAll('.status-wrap').forEach(function (wrap) {
+        var toggle = wrap.querySelector('.status-toggle');
+        var form = wrap.querySelector('.status-form');
+        if (!toggle || !form) return;
+        statusFormHome.set(form, wrap);
+
         toggle.addEventListener('click', function (event) {
             event.stopPropagation();
-            var form = toggle.parentElement.querySelector('.status-form');
+            var isHidden = form.classList.contains('hidden');
             document.querySelectorAll('.status-form').forEach(function (f) {
-                if (f !== form) f.classList.add('hidden');
+                if (f !== form) closeStatusForm(f);
             });
-            form.classList.toggle('hidden');
+            if (isHidden) {
+                document.body.appendChild(form);
+                form.classList.remove('hidden');
+                positionStatusForm(toggle, form);
+            } else {
+                closeStatusForm(form);
+            }
         });
+    });
+
+    document.querySelectorAll('.category-log').forEach(function (log) {
+        log.addEventListener('scroll', function () {
+            document.querySelectorAll('.status-form').forEach(closeStatusForm);
+        });
+    });
+
+    window.addEventListener('resize', function () {
+        document.querySelectorAll('.status-form').forEach(closeStatusForm);
     });
 
     document.querySelectorAll('.category-rename-toggle').forEach(function (toggle) {
@@ -206,7 +254,10 @@
     });
 
     document.addEventListener('click', function (event) {
-        document.querySelectorAll('.status-form, .category-rename-form, #add-category-form, #notif-panel, #calendar-panel, #deleted-panel').forEach(function (f) {
+        document.querySelectorAll('.status-form').forEach(function (f) {
+            if (!f.contains(event.target)) closeStatusForm(f);
+        });
+        document.querySelectorAll('.category-rename-form, #add-category-form, #notif-panel, #calendar-panel, #deleted-panel').forEach(function (f) {
             if (!f.contains(event.target)) f.classList.add('hidden');
         });
     });
