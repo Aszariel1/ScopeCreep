@@ -170,3 +170,23 @@ if CLOUDINARY_CLOUD_NAME:
     }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Without this, unhandled exceptions vanish silently in production (DEBUG=False
+# drops Django's default console handler and only tries mail_admins, which
+# isn't configured here) - nothing showed up in Render's logs for a 500.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
