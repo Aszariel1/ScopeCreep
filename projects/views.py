@@ -1,6 +1,7 @@
 import math
 from datetime import timedelta
 
+import cloudinary.exceptions
 from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -121,11 +122,15 @@ def restore_category(request, token_artist, category_id):
 def upload_draft_image(request, token_artist):
     project = get_object_or_404(Project, token_artist=token_artist)
 
+    url = reverse('projects:artist_workspace', kwargs={'token_artist': token_artist})
     image = request.FILES.get('image')
     if image:
-        DraftImage.objects.create(project=project, image=image)
+        try:
+            DraftImage.objects.create(project=project, image=image)
+        except cloudinary.exceptions.Error:
+            return redirect(f'{url}?image_error=1')
 
-    return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
+    return redirect(url)
 
 
 def delete_draft_image(request, token_artist, image_id):

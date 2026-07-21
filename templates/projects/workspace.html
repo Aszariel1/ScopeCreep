@@ -145,6 +145,9 @@
                     </label>
                 </form>
             </div>
+            {% if request.GET.image_error %}
+            <p class="text-xs text-red-400 px-4 -mt-1 mb-2">Image failed to upload — it's probably over Cloudinary's 10MB free-plan limit. Try a smaller file.</p>
+            {% endif %}
             <div class="shape-bottom notch-right p-4">
                 {% if project.description %}
                 <p class="text-sm text-gray-300 mb-4 whitespace-pre-line">{{ project.description }}</p>
