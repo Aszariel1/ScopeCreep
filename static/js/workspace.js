@@ -61,6 +61,12 @@
             card.style.opacity = isActive ? '1' : String(opacity);
             card.style.zIndex = String(z);
             card.style.pointerEvents = isActive ? 'auto' : 'none';
+            // Cards beyond the immediate peek land on the exact same spot as
+            // the visible peek card. At opacity 0 they should be invisible,
+            // but stacking two backdrop-filter cards there makes the visible
+            // one disappear too - fully remove the fully-transparent one
+            // from rendering instead of just fading it out.
+            card.style.visibility = (isActive || opacity > 0) ? 'visible' : 'hidden';
             card.classList.toggle('is-active', isActive);
         });
 
@@ -83,16 +89,16 @@
         return ((index % count) + count) % count;
     }
 
+    var detailsRow = document.getElementById('details-row');
     var briefPanel = document.getElementById('brief-panel');
     var briefTab = document.getElementById('brief-tab');
-    var detailsPanel = document.getElementById('details-panel');
     var detailsTab = document.getElementById('details-tab');
     var briefOpen = false;
 
     function showAccordionPanel(which) {
         briefOpen = which === 'brief';
         if (briefPanel) briefPanel.classList.toggle('hidden', !briefOpen);
-        if (detailsPanel) detailsPanel.classList.toggle('hidden', briefOpen);
+        if (detailsRow) detailsRow.classList.toggle('hidden', briefOpen);
         if (!briefOpen) logCollapsed = false;
         if (!stackWrap || !count) return;
         render(false);
@@ -101,6 +107,52 @@
 
     if (briefTab) briefTab.addEventListener('click', function () { showAccordionPanel('brief'); });
     if (detailsTab) detailsTab.addEventListener('click', function () { showAccordionPanel('details'); });
+
+    var statusPanel = document.getElementById('status-panel');
+    var statusClose = document.getElementById('status-close');
+    var statusEditForm = document.getElementById('status-edit-form');
+    var statusEditCost = document.getElementById('status-edit-cost');
+    var statusEditHours = document.getElementById('status-edit-hours');
+    var statusEditNote = document.getElementById('status-edit-note');
+    var statusPanelTitle = document.getElementById('status-panel-title');
+
+    function openStatusPanel(toggle) {
+        statusEditForm.action = toggle.dataset.action;
+        statusEditCost.value = toggle.dataset.cost;
+        statusEditHours.value = toggle.dataset.hours;
+        statusEditNote.value = toggle.dataset.note;
+        statusPanelTitle.textContent = toggle.dataset.description;
+        if (statusPanel) statusPanel.classList.add('is-open');
+    }
+
+    function closeStatusPanel() {
+        if (statusPanel) statusPanel.classList.remove('is-open');
+    }
+
+    document.querySelectorAll('.status-toggle').forEach(function (toggle) {
+        toggle.addEventListener('click', function (event) {
+            event.stopPropagation();
+            openStatusPanel(toggle);
+        });
+    });
+
+    if (statusClose) statusClose.addEventListener('click', closeStatusPanel);
+
+    document.addEventListener('click', function (event) {
+        if (statusPanel && statusPanel.classList.contains('is-open')
+            && !statusPanel.contains(event.target) && !event.target.closest('.status-toggle')) {
+            closeStatusPanel();
+        }
+    });
+
+    var imageErrorMsg = document.getElementById('image-error');
+    if (imageErrorMsg) {
+        showAccordionPanel('brief');
+        history.replaceState(null, '', window.location.pathname);
+        setTimeout(function () {
+            imageErrorMsg.classList.add('hidden');
+        }, 5000);
+    }
 
     if (stackWrap && count) {
         render(false);
@@ -183,65 +235,6 @@
         });
     }
 
-    var statusFormHome = new WeakMap();
-
-    function positionStatusForm(toggle, form) {
-        var rect = toggle.getBoundingClientRect();
-        var width = form.offsetWidth;
-        var left = Math.min(Math.max(8, rect.right - width), window.innerWidth - width - 8);
-        var top = rect.bottom + 4;
-        if (top + form.offsetHeight > window.innerHeight - 8) {
-            top = Math.max(8, rect.top - form.offsetHeight - 4);
-        }
-        form.style.position = 'fixed';
-        form.style.right = 'auto';
-        form.style.left = left + 'px';
-        form.style.top = top + 'px';
-    }
-
-    function closeStatusForm(form) {
-        if (form.classList.contains('hidden')) return;
-        form.classList.add('hidden');
-        form.style.position = '';
-        form.style.top = '';
-        form.style.left = '';
-        form.style.right = '';
-        var home = statusFormHome.get(form);
-        if (home) home.appendChild(form);
-    }
-
-    document.querySelectorAll('.status-wrap').forEach(function (wrap) {
-        var toggle = wrap.querySelector('.status-toggle');
-        var form = wrap.querySelector('.status-form');
-        if (!toggle || !form) return;
-        statusFormHome.set(form, wrap);
-
-        toggle.addEventListener('click', function (event) {
-            event.stopPropagation();
-            var isHidden = form.classList.contains('hidden');
-            document.querySelectorAll('.status-form').forEach(function (f) {
-                if (f !== form) closeStatusForm(f);
-            });
-            if (isHidden) {
-                document.body.appendChild(form);
-                form.classList.remove('hidden');
-                positionStatusForm(toggle, form);
-            } else {
-                closeStatusForm(form);
-            }
-        });
-    });
-
-    document.querySelectorAll('.category-log').forEach(function (log) {
-        log.addEventListener('scroll', function () {
-            document.querySelectorAll('.status-form').forEach(closeStatusForm);
-        });
-    });
-
-    window.addEventListener('resize', function () {
-        document.querySelectorAll('.status-form').forEach(closeStatusForm);
-    });
-
     document.querySelectorAll('.category-rename-toggle').forEach(function (toggle) {
         toggle.addEventListener('click', function (event) {
             event.stopPropagation();
@@ -254,9 +247,6 @@
     });
 
     document.addEventListener('click', function (event) {
-        document.querySelectorAll('.status-form').forEach(function (f) {
-            if (!f.contains(event.target)) closeStatusForm(f);
-        });
         document.querySelectorAll('.category-rename-form, #add-category-form, #notif-panel, #calendar-panel, #deleted-panel, #share-box').forEach(function (f) {
             if (!f.contains(event.target)) f.classList.add('hidden');
         });

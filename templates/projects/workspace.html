@@ -49,7 +49,8 @@
             </div>
         </div>
 
-        <div id="details-panel" class="relative min-h-[58px]">
+        <div id="details-row" class="flex items-start gap-3">
+        <div id="details-panel" class="relative min-h-[58px] flex-1 min-w-0">
             <button type="button" id="brief-tab" class="card absolute top-0 left-0 z-10 w-[132px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
                 BRIEF
                 <span class="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-gray-300 shrink-0">{% include "icons/chevron-right.html" with cls="w-3.5 h-3.5" %}</span>
@@ -79,28 +80,18 @@
                     <div class="flex flex-wrap items-center justify-between border-b border-white/10 last:border-0 py-2 text-sm gap-2 sm:gap-4">
                         <span class="flex-1 text-gray-200">{{ change_request.description }}</span>
                         <span class="num text-gray-400 whitespace-nowrap">{{ change_request.extra_cost|floatformat:"-2" }} eur / {{ change_request.extra_hours|floatformat:"-2" }} h</span>
-                        <div class="status-wrap relative whitespace-nowrap">
-                            <button type="button" class="status-toggle status-badge status-{{ change_request.status }} text-xs px-2 py-1 rounded-full font-medium inline-flex items-center gap-1">
-                                {% if change_request.status == 'pending' %}{% include "icons/clock.html" with cls="w-3 h-3" %}
-                                {% elif change_request.status == 'approved' %}{% include "icons/check.html" with cls="w-3 h-3" %}
-                                {% elif change_request.status == 'reject' %}{% include "icons/x.html" with cls="w-3 h-3" %}
-                                {% elif change_request.status == 'archived' %}{% include "icons/archive.html" with cls="w-3 h-3" %}
-                                {% endif %}{{ change_request.get_status_display }}
-                            </button>
-                            <form method="post" action="{% url 'projects:update_change_request_status' project.token_artist change_request.id %}" class="status-form hidden absolute right-0 top-full mt-1 z-10 card rounded-lg p-3 flex flex-col gap-2 w-56 max-w-[90vw]">
-                                {% csrf_token %}
-                                <div class="flex gap-2">
-                                    <input type="number" name="extra_cost" value="{{ change_request.extra_cost }}" step="0.01" min="0" placeholder="Cost" class="field rounded-lg px-2 py-1 text-xs text-gray-100 w-1/2">
-                                    <input type="number" name="extra_hours" value="{{ change_request.extra_hours }}" step="0.01" min="0" placeholder="Hours" class="field rounded-lg px-2 py-1 text-xs text-gray-100 w-1/2">
-                                </div>
-                                <input type="text" name="note" value="{{ change_request.artist_note }}" maxlength="200" placeholder="Note (optional)" class="field rounded-lg px-2 py-1 text-xs text-gray-100">
-                                <div class="flex flex-col gap-1">
-                                    <button type="submit" name="status" value="approved" class="btn rounded-lg px-2 py-1.5 text-xs text-emerald-400 inline-flex items-center justify-center gap-1.5">{% include "icons/check.html" with cls="w-3.5 h-3.5" %}Approve</button>
-                                    <button type="submit" name="status" value="reject" class="btn rounded-lg px-2 py-1.5 text-xs text-red-400 inline-flex items-center justify-center gap-1.5">{% include "icons/x.html" with cls="w-3.5 h-3.5" %}Reject</button>
-                                    <button type="submit" name="status" value="archived" class="btn rounded-lg px-2 py-1.5 text-xs text-gray-400 inline-flex items-center justify-center gap-1.5">{% include "icons/archive.html" with cls="w-3.5 h-3.5" %}Archive</button>
-                                </div>
-                            </form>
-                        </div>
+                        <button type="button" class="status-toggle status-badge status-{{ change_request.status }} text-xs px-2 py-1 rounded-full font-medium inline-flex items-center gap-1 whitespace-nowrap"
+                            data-description="{{ change_request.description }}"
+                            data-cost="{{ change_request.extra_cost }}"
+                            data-hours="{{ change_request.extra_hours }}"
+                            data-note="{{ change_request.artist_note }}"
+                            data-action="{% url 'projects:update_change_request_status' project.token_artist change_request.id %}">
+                            {% if change_request.status == 'pending' %}{% include "icons/clock.html" with cls="w-3 h-3" %}
+                            {% elif change_request.status == 'approved' %}{% include "icons/check.html" with cls="w-3 h-3" %}
+                            {% elif change_request.status == 'reject' %}{% include "icons/x.html" with cls="w-3 h-3" %}
+                            {% elif change_request.status == 'archived' %}{% include "icons/archive.html" with cls="w-3 h-3" %}
+                            {% endif %}{{ change_request.get_status_display }}
+                        </button>
                         {% if change_request.artist_note %}
                         <span class="w-full text-xs text-gray-500 italic">{{ change_request.artist_note }}</span>
                         {% endif %}
@@ -129,6 +120,29 @@
             {% endif %}
         </div>
 
+        <div id="status-panel" class="status-panel relative min-h-[58px] w-0 overflow-hidden shrink-0">
+            <div class="card rounded-xl p-4 w-72 max-w-[80vw] h-full">
+                <div class="flex items-start justify-between gap-2 mb-3">
+                    <p id="status-panel-title" class="text-sm text-gray-200 min-w-0 break-words"></p>
+                    <button type="button" id="status-close" class="btn w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 shrink-0" title="Close">{% include "icons/x.html" with cls="w-3.5 h-3.5" %}</button>
+                </div>
+                <form method="post" id="status-edit-form" class="flex flex-col gap-3">
+                    {% csrf_token %}
+                    <div class="flex gap-2">
+                        <input type="number" name="extra_cost" id="status-edit-cost" step="0.01" min="0" placeholder="Cost (EUR)" class="field rounded-lg px-3 py-2 text-sm text-gray-100 w-1/2">
+                        <input type="number" name="extra_hours" id="status-edit-hours" step="0.01" min="0" placeholder="Hours" class="field rounded-lg px-3 py-2 text-sm text-gray-100 w-1/2">
+                    </div>
+                    <input type="text" name="note" id="status-edit-note" maxlength="200" placeholder="Note (optional)" class="field rounded-lg px-3 py-2 text-sm text-gray-100">
+                    <div class="flex flex-col gap-2">
+                        <button type="submit" name="status" value="approved" class="btn rounded-lg px-3 py-2 text-sm text-emerald-400 inline-flex items-center justify-center gap-1.5">{% include "icons/check.html" with cls="w-4 h-4" %}Approve</button>
+                        <button type="submit" name="status" value="reject" class="btn rounded-lg px-3 py-2 text-sm text-red-400 inline-flex items-center justify-center gap-1.5">{% include "icons/x.html" with cls="w-4 h-4" %}Reject</button>
+                        <button type="submit" name="status" value="archived" class="btn rounded-lg px-3 py-2 text-sm text-gray-400 inline-flex items-center justify-center gap-1.5">{% include "icons/archive.html" with cls="w-4 h-4" %}Archive</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+
         <div id="brief-panel" class="hidden relative min-h-[58px]">
             <button type="button" id="details-tab" class="card absolute top-0 right-0 z-10 w-[140px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
                 <span class="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-gray-300 shrink-0">{% include "icons/chevron-left.html" with cls="w-3.5 h-3.5" %}</span>
@@ -145,10 +159,10 @@
                     </label>
                 </form>
             </div>
-            {% if request.GET.image_error %}
-            <p class="text-xs text-red-400 px-4 -mt-1 mb-2">Image failed to upload — it's probably over Cloudinary's 10MB free-plan limit. Try a smaller file.</p>
-            {% endif %}
             <div class="shape-bottom notch-right p-4">
+                {% if request.GET.image_error %}
+                <p id="image-error" class="text-xs text-red-400 mb-3">File size is too big, please upload images smaller than 10 MB.</p>
+                {% endif %}
                 {% if project.description %}
                 <p class="text-sm text-gray-300 mb-4 whitespace-pre-line">{{ project.description }}</p>
                 {% else %}

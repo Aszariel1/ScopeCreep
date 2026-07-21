@@ -162,13 +162,22 @@
     animation: panel-in 0.18s ease;
 }
 
+/* Status editor slides in from the right and pushes the log panel over,
+   rather than swapping it out like the brief/details accordion. */
+.status-panel {
+    transition: width 0.25s ease;
+}
+
+.status-panel.is-open {
+    width: 18rem;
+}
+
 /* Popovers and dropdowns ease in instead of snapping open */
 @keyframes pop-in {
     from { opacity: 0; transform: translateY(3px) scale(0.98); }
     to { opacity: 1; transform: none; }
 }
 
-.status-form:not(.hidden),
 .category-rename-form:not(.hidden),
 #add-category-form:not(.hidden),
 #notif-panel:not(.hidden),
