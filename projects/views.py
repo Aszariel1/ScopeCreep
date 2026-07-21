@@ -2,6 +2,9 @@ import math
 from datetime import timedelta
 
 import cloudinary.exceptions
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -14,6 +17,22 @@ from .models import ChangeRequest, DraftImage, Project, ProjectCategory
 
 ACCEPTED_STATUSES = [ChangeRequest.Status.APPROVED, ChangeRequest.Status.ARCHIVED]
 HOURS_PER_WORKDAY = 8
+
+FIELD_CLASS = 'field w-full rounded-lg px-3 py-2 text-gray-100'
+
+
+class StyledAuthenticationForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': FIELD_CLASS})
+
+
+class StyledUserCreationForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': FIELD_CLASS})
 
 
 def recalculate_project_totals(project):
@@ -32,9 +51,96 @@ def recalculate_project_totals(project):
     project.save(update_fields=['price', 'hours', 'estimated_date'])
 
 
+def get_or_create_demo_project():
+    project, created = Project.objects.get_or_create(
+        name='Demo Project',
+        defaults={
+            'project_type': Project.ProjectType.GRAPHIC_DESIGN,
+            'description': "This is a live demo — click around, request a change, approve one. Nothing here is real client work.",
+        },
+    )
+    if created:
+        categories = {
+            category_name: ProjectCategory.objects.create(project=project, category_name=category_name)
+            for category_name in Project.DEFAULT_CATEGORIES[project.project_type]
+        }
+
+        ChangeRequest.objects.create(
+            project=project, project_cat=categories['Typography'],
+            description='Switch body font to something more modern', status=ChangeRequest.Status.APPROVED,
+            extra_cost=45, extra_hours=1.5, artist_note='Swapped to Inter', accepted_at=timezone.now(),
+        )
+        ChangeRequest.objects.create(
+            project=project, project_cat=categories['Layout'],
+            description='Add a sticky header on scroll', status=ChangeRequest.Status.PENDING,
+            extra_cost=80, extra_hours=2,
+        )
+        ChangeRequest.objects.create(
+            project=project, project_cat=categories['Branding'],
+            description='Try a warmer accent color', status=ChangeRequest.Status.APPROVED,
+            extra_cost=30, extra_hours=1, accepted_at=timezone.now(),
+        )
+        ChangeRequest.objects.create(
+            project=project, project_cat=categories['Logo-type'],
+            description='Explore a monogram version of the logo', status=ChangeRequest.Status.PENDING,
+            extra_cost=25, extra_hours=1,
+        )
+        recalculate_project_totals(project)
+
+    return project
+
+
+def landing(request):
+    demo_project = get_or_create_demo_project()
+    return render(request, 'projects/landing.html', {'demo_token': demo_project.token_client})
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('projects:dashboard')
+
+    if request.method == 'POST':
+        form = StyledUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('projects:dashboard')
+    else:
+        form = StyledUserCreationForm()
+
+    return render(request, 'projects/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('projects:dashboard')
+
+    if request.method == 'POST':
+        form = StyledAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect('projects:dashboard')
+    else:
+        form = StyledAuthenticationForm()
+
+    return render(request, 'projects/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('projects:landing')
+
+
+@login_required
+def dashboard(request):
+    return render(request, 'projects/dashboard.html', {'projects': request.user.projects.all().order_by('-data_creare')})
+
+
+@login_required
 def project_create(request):
     if request.method == 'POST':
         project = Project.objects.create(
+            owner=request.user,
             name=request.POST.get('name'),
             project_type=request.POST.get('project_type'),
             description=request.POST.get('description', ''),

@@ -171,6 +171,10 @@ if CLOUDINARY_CLOUD_NAME:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = 'projects:login'
+LOGIN_REDIRECT_URL = 'projects:dashboard'
+LOGOUT_REDIRECT_URL = 'projects:landing'
+
 # Without this, unhandled exceptions vanish silently in production (DEBUG=False
 # drops Django's default console handler and only tries mail_admins, which
 # isn't configured here) - nothing showed up in Render's logs for a 500.

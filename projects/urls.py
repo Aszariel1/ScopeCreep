@@ -5,7 +5,12 @@ from . import views
 app_name = 'projects'
 
 urlpatterns = [
-    path('', views.project_create, name='project_create'),
+    path('', views.landing, name='landing'),
+    path('register/', views.register, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('new/', views.project_create, name='project_create'),
     path('artist/<uuid:token_artist>/', views.artist_workspace, name='artist_workspace'),
     path('artist/<uuid:token_artist>/category/add/', views.add_category, name='add_category'),
     path('artist/<uuid:token_artist>/category/<int:category_id>/change-request/', views.add_change_request, name='add_change_request'),

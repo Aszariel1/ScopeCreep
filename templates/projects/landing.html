@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div id="splash" class="fixed inset-0 z-50 flex items-center justify-center" style="background: var(--bg);">
+    <div class="flex items-center gap-3">
+        <svg id="splash-logo" viewBox="0 0 638.1 898" class="h-14 w-auto text-accent" xmlns="http://www.w3.org/2000/svg">
+            <rect fill="currentColor" y="615.9" width="282.1" height="282.1" rx="49.32" ry="49.32"/>
+            <rect fill="currentColor" x="356" y="0" width="282.1" height="282.1" rx="49.32" ry="49.32"/>
+            <path fill="currentColor" d="M578.76,489.72h-81.71c-118.81,0-214.95-127.74-214.95-285.58V59.34c0-32.76-26.56-59.34-59.34-59.34H59.34C26.56,0,0,26.57,0,59.34v289.61c0,32.76,26.56,59.34,59.34,59.34h81.71c118.81,0,214.94,127.73,214.94,285.58v144.79c0,32.77,26.57,59.34,59.34,59.34h163.43c32.77,0,59.34-26.56,59.34-59.34v-289.6c0-32.77-26.56-59.34-59.34-59.34Z"/>
+            <circle cx="497.54" cy="750.36" r="92.02" fill="#fff"/>
+            <circle cx="497.54" cy="750.36" r="40" fill="currentColor"/>
+        </svg>
+        <span id="splash-text" class="text-2xl font-semibold tracking-tight text-white overflow-hidden whitespace-nowrap">ScopeCreep</span>
+    </div>
+</div>
+
+<div id="landing" class="opacity-0">
+
+    <section class="max-w-5xl mx-auto px-4 pt-20 pb-16 text-center">
+        <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-5">
+            Track every change request.<br class="hidden sm:block"> Bill every extra hour.
+        </h1>
+        <p class="text-lg text-gray-400 max-w-xl mx-auto mb-8">
+            ScopeCreep is a lightweight workspace for freelance artists and designers to log client change
+            requests, keep every extra billable, and share transparent project status &mdash; no client login required.
+        </p>
+        <div class="flex items-center justify-center gap-3">
+            <a href="{% url 'projects:register' %}" class="btn-primary px-6 py-2.5 rounded-lg font-medium">Get started free</a>
+            <a href="{% url 'projects:login' %}" class="btn px-6 py-2.5 rounded-lg font-medium text-gray-200">Log in</a>
+        </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-4 pb-16">
+        <h2 class="text-2xl font-semibold text-white text-center mb-2">See it in action</h2>
+        <p class="text-sm text-gray-500 text-center mb-6">A live demo project &mdash; click around, request a change, approve one. Nothing here is real client work.</p>
+        <div class="card rounded-xl overflow-hidden">
+            <iframe id="demo-iframe" src="{% url 'projects:client_view' token_client=demo_token %}?embed=1" class="w-full border-0 block" style="overflow: hidden;" loading="lazy" title="ScopeCreep live demo"></iframe>
+        </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-4 pb-16 grid sm:grid-cols-3 gap-4">
+        <div class="card rounded-xl p-6">
+            <h3 class="font-semibold text-white mb-2">Log every request</h3>
+            <p class="text-sm text-gray-400">Organize change requests by category, per project, so nothing a client asks for slips through unbilled. Each category keeps its own running log, so you can see exactly what changed and when, without digging through old messages or emails to piece it back together.</p>
+        </div>
+        <div class="card rounded-xl p-6">
+            <h3 class="font-semibold text-white mb-2">Keep scope honest</h3>
+            <p class="text-sm text-gray-400">Attach a price and an hours estimate to every approved change before it becomes real work. Totals and the estimated delivery date recalculate automatically, so you always know where a project actually stands.</p>
+        </div>
+        <div class="card rounded-xl p-6">
+            <h3 class="font-semibold text-white mb-2">Share with clients</h3>
+            <p class="text-sm text-gray-400">Send one link, no account required on their end. Clients see live status, request changes themselves, and approve the ones with a price attached &mdash; all without a single back-and-forth email.</p>
+        </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-4 pb-16">
+        <h2 class="text-2xl font-semibold text-white text-center mb-8">Pricing</h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+            <div class="card rounded-xl p-8 text-center">
+                <p class="text-sm font-medium text-accent mb-1">Free</p>
+                <p class="text-3xl font-semibold text-white mb-4">$0</p>
+                <ul class="text-sm text-gray-400 space-y-2 mb-6 inline-block text-left">
+                    <li>Unlimited projects and change requests</li>
+                    <li>Shareable client links, no client account needed</li>
+                    <li>Automatic totals and delivery estimates</li>
+                    <li>Draft image uploads per project</li>
+                </ul>
+                <div>
+                    <a href="{% url 'projects:register' %}" class="btn-primary px-6 py-2.5 rounded-lg font-medium inline-block">Get started free</a>
+                </div>
+            </div>
+            <div class="card rounded-xl p-8 text-center">
+                <p class="text-sm font-medium text-accent mb-1">Support the project</p>
+                <p class="text-3xl font-semibold text-white mb-4">$5<span class="text-base font-normal text-gray-500"> / mo</span></p>
+                <ul class="text-sm text-gray-400 space-y-2 mb-6 inline-block text-left">
+                    <li>Everything in Free</li>
+                    <li>Help fund new features</li>
+                    <li>A supporter badge on your account</li>
+                    <li>Our gratitude, Patreon-style</li>
+                </ul>
+                <div>
+                    <button type="button" disabled class="btn px-6 py-2.5 rounded-lg font-medium opacity-60 cursor-not-allowed">Coming soon</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-4 pb-24 text-center">
+        <div class="card rounded-xl p-10">
+            <h2 class="text-2xl font-semibold text-white mb-3">Ready to stop scope creep?</h2>
+            <p class="text-gray-400 mb-6">Create a free account and start your first project in under a minute.</p>
+            <a href="{% url 'projects:register' %}" class="btn-primary px-6 py-2.5 rounded-lg font-medium inline-block">Create free account</a>
+        </div>
+    </section>
+
+    <div class="flex justify-center pb-10">
+        <svg viewBox="0 0 638.1 898" class="h-5 w-auto text-gray-700" xmlns="http://www.w3.org/2000/svg">
+            <rect fill="currentColor" y="615.9" width="282.1" height="282.1" rx="49.32" ry="49.32"/>
+            <rect fill="currentColor" x="356" y="0" width="282.1" height="282.1" rx="49.32" ry="49.32"/>
+            <path fill="currentColor" d="M578.76,489.72h-81.71c-118.81,0-214.95-127.74-214.95-285.58V59.34c0-32.76-26.56-59.34-59.34-59.34H59.34C26.56,0,0,26.57,0,59.34v289.61c0,32.76,26.56,59.34,59.34,59.34h81.71c118.81,0,214.94,127.73,214.94,285.58v144.79c0,32.77,26.57,59.34,59.34,59.34h163.43c32.77,0,59.34-26.56,59.34-59.34v-289.6c0-32.77-26.56-59.34-59.34-59.34Z"/>
+        </svg>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block extra_css %}
+<style>
+    #splash-text {
+        max-width: 0;
+        animation: splash-text-reveal 0.6s ease 0.35s forwards;
+    }
+
+    @keyframes splash-text-reveal {
+        to { max-width: 12rem; }
+    }
+
+    #splash.is-hiding {
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    #landing.is-visible {
+        opacity: 1;
+        transition: opacity 0.4s ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #splash-text { max-width: 12rem; animation: none; }
+    }
+</style>
+{% endblock extra_css %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        var splash = document.getElementById('splash');
+        var landing = document.getElementById('landing');
+        var seen = sessionStorage.getItem('sc_splash_seen');
+
+        function reveal() {
+            landing.classList.add('is-visible');
+            splash.classList.add('is-hiding');
+            setTimeout(function () { splash.remove(); }, 450);
+        }
+
+        if (seen) {
+            splash.remove();
+            landing.classList.add('is-visible');
+            return;
+        }
+
+        sessionStorage.setItem('sc_splash_seen', '1');
+        setTimeout(reveal, 2200);
+    })();
+
+    (function () {
+        var iframe = document.getElementById('demo-iframe');
+        if (!iframe) return;
+
+        function measure() {
+            try {
+                var doc = iframe.contentDocument;
+                if (!doc || !doc.documentElement) return;
+                iframe.style.height = doc.documentElement.scrollHeight + 'px';
+            } catch (e) {}
+        }
+
+        iframe.addEventListener('load', function () {
+            measure();
+            setTimeout(measure, 300);
+            try {
+                var ro = new ResizeObserver(measure);
+                ro.observe(iframe.contentDocument.body);
+            } catch (e) {}
+        });
+    })();
+</script>
+{% endblock extra_js %}

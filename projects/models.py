@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 
@@ -14,6 +15,9 @@ class Project(models.Model):
         ProjectType.GRAPHIC_DESIGN: ['Typography', 'Layout', 'Branding', 'Logo-type'],
     }
 
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects',
+    )
     name = models.CharField(max_length=200)
     project_type = models.CharField(max_length=20, choices=ProjectType.choices)
     description = models.TextField(blank=True)

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="rise-in max-w-sm mx-auto mt-16 px-4 pb-12">
+    <div class="card rounded-xl p-6">
+        <h1 class="text-xl font-semibold mb-1 text-white tracking-tight">Log in</h1>
+        <p class="text-sm text-gray-500 mb-6">Welcome back.</p>
+
+        {% if form.non_field_errors %}
+        <p class="text-xs text-red-400 mb-4">{{ form.non_field_errors.0 }}</p>
+        {% endif %}
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-300">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<p class="text-xs text-red-400 mt-1">{{ field.errors.0 }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary w-full px-4 py-2 rounded-lg font-medium">Log in</button>
+        </form>
+
+        <p class="text-sm text-gray-500 mt-5 text-center">
+            No account yet? <a href="{% url 'projects:register' %}" class="text-accent hover:underline">Sign up</a>
+        </p>
+    </div>
+</div>
+{% endblock content %}

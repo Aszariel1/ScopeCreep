@@ -24,7 +24,8 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="text-gray-100 min-h-screen overflow-x-hidden font-sans">
+<body class="text-gray-100 {% if not request.GET.embed %}min-h-screen{% endif %} overflow-x-hidden font-sans">
+    {% if not request.GET.embed %}
     <header class="card !rounded-none !border-x-0 !border-t-0">
         <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-2">
             <a href="/" class="flex items-center gap-2 shrink-0" aria-label="ScopeCreep">
@@ -37,8 +38,18 @@
                 </svg>
             </a>
             <a href="/" class="text-base font-semibold tracking-tight text-white">ScopeCreep</a>
+            <nav class="ml-auto flex items-center gap-3 text-sm">
+                {% if user.is_authenticated %}
+                <a href="{% url 'projects:dashboard' %}" class="text-gray-300 hover:text-white">Dashboard</a>
+                <a href="{% url 'projects:logout' %}" class="text-gray-500 hover:text-gray-300">Log out</a>
+                {% else %}
+                <a href="{% url 'projects:login' %}" class="text-gray-300 hover:text-white">Log in</a>
+                <a href="{% url 'projects:register' %}" class="btn-primary px-3 py-1.5 rounded-lg font-medium">Sign up</a>
+                {% endif %}
+            </nav>
         </div>
     </header>
+    {% endif %}
     {% block content %}{% endblock %}
     {% block extra_js %}{% endblock %}
     <script>
