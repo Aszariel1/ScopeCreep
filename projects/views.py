@@ -139,13 +139,21 @@ def dashboard(request):
 @login_required
 def project_create(request):
     if request.method == 'POST':
+        custom_type = request.POST.get('custom_project_type', '').strip()
+        if custom_type:
+            project_type = custom_type[:50]
+            default_categories = []
+        else:
+            project_type = request.POST.get('project_type')
+            default_categories = Project.DEFAULT_CATEGORIES.get(project_type, [])
+
         project = Project.objects.create(
             owner=request.user,
             name=request.POST.get('name'),
-            project_type=request.POST.get('project_type'),
+            project_type=project_type,
             description=request.POST.get('description', ''),
         )
-        for category_name in Project.DEFAULT_CATEGORIES[project.project_type]:
+        for category_name in default_categories:
             ProjectCategory.objects.create(project=project, category_name=category_name)
 
         return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': project.token_artist}) + '?new=1')

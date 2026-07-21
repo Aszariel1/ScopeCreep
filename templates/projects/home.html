@@ -17,10 +17,24 @@
 
             <div>
                 <label class="block text-sm font-medium mb-1 text-gray-300">Project type</label>
-                <select name="project_type" required class="field w-full rounded-lg px-3 py-2 text-gray-100">
-                    <option value="3d_art">3D Art</option>
-                    <option value="graphic_design">Graphic Design</option>
-                </select>
+                <p class="text-xs text-gray-500 mb-2">Choose a predefined template</p>
+                <div class="relative">
+                    <select name="project_type" class="field w-full appearance-none rounded-lg pl-3 pr-10 py-2 text-gray-100">
+                        <option value="3d_art">3D Art</option>
+                        <option value="2d_art">2D Art</option>
+                        <option value="graphic_design">Graphic Design</option>
+                        <option value="web_design">Web Design</option>
+                        <option value="video_editing">Video Editing</option>
+                    </select>
+                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        {% include "icons/chevron-down.html" with cls="w-4 h-4" %}
+                    </span>
+                </div>
+
+                <p class="text-xs text-gray-500 mt-4 mb-2">Create your own</p>
+                <input type="text" name="custom_project_type" maxlength="50" placeholder="e.g. Mural Painting"
+                       class="field w-full rounded-lg px-3 py-2 text-gray-100">
+                <p class="text-xs text-gray-600 mt-1">Fill this in to skip the template above &mdash; you'll add your own categories afterward.</p>
             </div>
 
             <div>

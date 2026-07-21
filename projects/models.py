@@ -8,18 +8,24 @@ from django.utils.text import slugify
 class Project(models.Model):
     class ProjectType(models.TextChoices):
         THREE_D_ART = '3d_art', '3D Art'
+        TWO_D_ART = '2d_art', '2D Art'
         GRAPHIC_DESIGN = 'graphic_design', 'Graphic Design'
+        WEB_DESIGN = 'web_design', 'Web Design'
+        VIDEO_EDITING = 'video_editing', 'Video Editing'
 
     DEFAULT_CATEGORIES = {
         ProjectType.THREE_D_ART: ['Mesh', 'Textures', 'Rigging'],
+        ProjectType.TWO_D_ART: ['Sketch', 'Lineart', 'Coloring'],
         ProjectType.GRAPHIC_DESIGN: ['Typography', 'Layout', 'Branding', 'Logo-type'],
+        ProjectType.WEB_DESIGN: ['UI/UX Design', 'Frontend Development', 'SEO & Content'],
+        ProjectType.VIDEO_EDITING: ['Editing', 'Color Grading', 'Sound Design'],
     }
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects',
     )
     name = models.CharField(max_length=200)
-    project_type = models.CharField(max_length=20, choices=ProjectType.choices)
+    project_type = models.CharField(max_length=50, choices=ProjectType.choices)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     hours = models.DecimalField(max_digits=6, decimal_places=2, default=0)

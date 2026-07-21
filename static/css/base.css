@@ -50,6 +50,10 @@ button:focus-visible, a:focus-visible, label:focus-visible {
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+select {
+    color-scheme: dark;
+}
+
 .field:focus {
     outline: none;
     border-color: var(--accent);
