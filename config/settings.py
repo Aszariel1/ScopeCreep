@@ -47,10 +47,9 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-# client_view is the only page meant to be embedded (external live-preview
-# iframes), so it opts out individually via @xframe_options_exempt instead of
-# disabling clickjacking protection site-wide.
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+# The whole app is embedded via iframe on suciustefan.com (not just
+# client_view), so clickjacking protection has to stay off site-wide.
+X_FRAME_OPTIONS = 'ALLOWALL'
 
 
 # Application definition

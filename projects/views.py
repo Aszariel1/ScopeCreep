@@ -13,7 +13,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.http import require_POST
 from PIL import Image
 from xhtml2pdf import pisa
@@ -337,7 +336,6 @@ def update_change_request_status(request, token_artist, change_request_id):
     return redirect(f'{url}?open={change_request.project_cat_id}')
 
 
-@xframe_options_exempt
 def client_view(request, token_client):
     project = get_object_or_404(
         Project.objects.prefetch_related('categories__change_requests', 'draft_images'),
