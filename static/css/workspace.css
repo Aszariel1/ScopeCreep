@@ -30,8 +30,8 @@
     background: var(--surface-2);
 }
 
-.artboard-scroll, .category-log, .brief-gallery { scrollbar-width: none; -ms-overflow-style: none; }
-.artboard-scroll::-webkit-scrollbar, .category-log::-webkit-scrollbar, .brief-gallery::-webkit-scrollbar { display: none; }
+.category-log, .brief-gallery { scrollbar-width: none; -ms-overflow-style: none; }
+.category-log::-webkit-scrollbar, .brief-gallery::-webkit-scrollbar { display: none; }
 
 .brief-gallery { max-height: 20rem; overflow-y: auto; }
 

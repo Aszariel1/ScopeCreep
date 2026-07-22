@@ -41,7 +41,9 @@
                     <span>
                         <span class="font-semibold text-white">{{ category.category_name }}</span>
                         <span class="block text-xs text-gray-400 mt-1">{{ category.change_requests.count }} request{{ category.change_requests.count|pluralize }}</span>
-                        <span class="num block text-xs font-semibold mt-2"><span class="text-emerald-400">{{ category.approved_cost|floatformat:"-2" }} eur</span> <span class="text-gray-600">/</span> <span class="text-sky-400">{{ category.approved_hours|floatformat:"-2" }} h</span></span>
+                        {% with totals=category.approved_totals %}
+                        <span class="num block text-xs font-semibold mt-2"><span class="text-emerald-400">{{ totals.cost|floatformat:"-2" }} eur</span> <span class="text-gray-600">/</span> <span class="text-sky-400">{{ totals.hours|floatformat:"-2" }} h</span></span>
+                        {% endwith %}
                     </span>
                     <span class="category-chevron text-gray-400 transition-transform inline-flex">{% include "icons/chevron-down.html" with cls="w-4 h-4" %}</span>
                 </button>

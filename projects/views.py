@@ -13,6 +13,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.http import require_POST
 from PIL import Image
 from xhtml2pdf import pisa
 
@@ -226,6 +228,7 @@ def artist_workspace(request, token_artist):
     return render(request, 'projects/workspace.html', context)
 
 
+@require_POST
 def add_change_request(request, token_artist, category_id):
     category = get_object_or_404(ProjectCategory, id=category_id, project__token_artist=token_artist)
 
@@ -241,6 +244,7 @@ def add_change_request(request, token_artist, category_id):
     return redirect(f'{url}?open={category.id}')
 
 
+@require_POST
 def add_category(request, token_artist):
     project = get_object_or_404(Project, token_artist=token_artist)
 
@@ -253,6 +257,7 @@ def add_category(request, token_artist):
     return redirect(url)
 
 
+@require_POST
 def rename_category(request, token_artist, category_id):
     category = get_object_or_404(ProjectCategory, id=category_id, project__token_artist=token_artist)
 
@@ -265,6 +270,7 @@ def rename_category(request, token_artist, category_id):
     return redirect(f'{url}?open={category.id}')
 
 
+@require_POST
 def delete_category(request, token_artist, category_id):
     category = get_object_or_404(ProjectCategory, id=category_id, project__token_artist=token_artist)
     category.deleted_at = timezone.now()
@@ -274,6 +280,7 @@ def delete_category(request, token_artist, category_id):
     return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
 
 
+@require_POST
 def restore_category(request, token_artist, category_id):
     category = get_object_or_404(ProjectCategory, id=category_id, project__token_artist=token_artist)
     category.deleted_at = None
@@ -284,6 +291,7 @@ def restore_category(request, token_artist, category_id):
     return redirect(f'{url}?open={category.id}')
 
 
+@require_POST
 def upload_draft_image(request, token_artist):
     project = get_object_or_404(Project, token_artist=token_artist)
 
@@ -299,6 +307,7 @@ def upload_draft_image(request, token_artist):
     return redirect(url)
 
 
+@require_POST
 def delete_draft_image(request, token_artist, image_id):
     draft = get_object_or_404(DraftImage, id=image_id, project__token_artist=token_artist)
     draft.image.delete(save=False)
@@ -307,6 +316,7 @@ def delete_draft_image(request, token_artist, image_id):
     return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
 
 
+@require_POST
 def update_change_request_status(request, token_artist, change_request_id):
     change_request = get_object_or_404(
         ChangeRequest, id=change_request_id, project__token_artist=token_artist,
@@ -327,6 +337,7 @@ def update_change_request_status(request, token_artist, change_request_id):
     return redirect(f'{url}?open={change_request.project_cat_id}')
 
 
+@xframe_options_exempt
 def client_view(request, token_client):
     project = get_object_or_404(
         Project.objects.prefetch_related('categories__change_requests', 'draft_images'),
@@ -336,6 +347,7 @@ def client_view(request, token_client):
     return render(request, 'projects/client_view.html', {'project': project, 'categories': categories})
 
 
+@require_POST
 def client_add_change_request(request, token_client, category_id):
     category = get_object_or_404(ProjectCategory, id=category_id, project__token_client=token_client)
 
@@ -349,6 +361,7 @@ def client_add_change_request(request, token_client, category_id):
     return redirect(f'{url}?open={category.id}')
 
 
+@require_POST
 def client_approve_change_request(request, token_client, change_request_id):
     change_request = get_object_or_404(
         ChangeRequest,
@@ -365,6 +378,7 @@ def client_approve_change_request(request, token_client, change_request_id):
     return redirect(reverse('projects:client_view', kwargs={'token_client': token_client}))
 
 
+@require_POST
 def client_cancel_change_request(request, token_client, change_request_id):
     change_request = get_object_or_404(
         ChangeRequest,

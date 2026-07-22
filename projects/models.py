@@ -51,12 +51,13 @@ class ProjectCategory(models.Model):
         return f'{self.project.name} - {self.category_name}'
 
     @property
-    def approved_cost(self):
-        return sum(cr.extra_cost for cr in self.change_requests.all() if cr.status in ('approved', 'archived'))
-
-    @property
-    def approved_hours(self):
-        return sum(cr.extra_hours for cr in self.change_requests.all() if cr.status in ('approved', 'archived'))
+    def approved_totals(self):
+        cost = hours = 0
+        for cr in self.change_requests.all():
+            if cr.status in ('approved', 'archived'):
+                cost += cr.extra_cost
+                hours += cr.extra_hours
+        return {'cost': cost, 'hours': hours}
 
 
 class ChangeRequest(models.Model):
