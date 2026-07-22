@@ -101,7 +101,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
-        conn_max_age=600,
+        # Neon's free tier auto-suspends the database after inactivity, which
+        # kills any connection Django was holding open. A short conn_max_age
+        # means Django reconnects often enough that it rarely reuses a
+        # connection Neon already dropped.
+        conn_max_age=60,
     )
 }
 

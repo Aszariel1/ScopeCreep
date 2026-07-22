@@ -1,3 +1,4 @@
+import io
 import math
 from datetime import timedelta
 
@@ -5,12 +6,14 @@ import cloudinary.exceptions
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from PIL import Image
 from xhtml2pdf import pisa
 
 from .models import ChangeRequest, DraftImage, Project, ProjectCategory
@@ -19,6 +22,54 @@ ACCEPTED_STATUSES = [ChangeRequest.Status.APPROVED, ChangeRequest.Status.ARCHIVE
 HOURS_PER_WORKDAY = 8
 
 FIELD_CLASS = 'field w-full rounded-lg px-3 py-2 text-gray-100'
+
+MAX_UPLOAD_SIZE = 5 * 1024 * 1024
+TARGET_IMAGE_SIZE = 1 * 1024 * 1024
+MAX_IMAGE_DIMENSION = 2560
+
+
+def compress_image_upload(image):
+    """Downscale/re-encode an uploaded image until it's under TARGET_IMAGE_SIZE.
+
+    Uploads over MAX_UPLOAD_SIZE are rejected outright (via ImageUploadTooLarge)
+    rather than compressed, since squeezing a 25MB file down to 1MB would wreck
+    quality badly enough that the result looks like a bug, not a feature.
+    """
+    if image.size > MAX_UPLOAD_SIZE:
+        raise ImageUploadTooLarge
+
+    if image.size <= TARGET_IMAGE_SIZE:
+        return image
+
+    img = Image.open(image)
+    img_format = 'PNG' if img.format == 'PNG' and img.mode in ('RGBA', 'P') else 'JPEG'
+    if img_format == 'JPEG' and img.mode != 'RGB':
+        img = img.convert('RGB')
+
+    if max(img.size) > MAX_IMAGE_DIMENSION:
+        img.thumbnail((MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION), Image.LANCZOS)
+
+    buffer = io.BytesIO()
+    if img_format == 'JPEG':
+        quality = 90
+        while quality >= 30:
+            buffer.seek(0)
+            buffer.truncate()
+            img.save(buffer, format='JPEG', quality=quality, optimize=True)
+            if buffer.tell() <= TARGET_IMAGE_SIZE:
+                break
+            quality -= 10
+    else:
+        img.save(buffer, format='PNG', optimize=True)
+
+    buffer.seek(0)
+    name = image.name.rsplit('.', 1)[0] + ('.jpg' if img_format == 'JPEG' else '.png')
+    content_type = 'image/jpeg' if img_format == 'JPEG' else 'image/png'
+    return InMemoryUploadedFile(buffer, 'ImageField', name, content_type, buffer.getbuffer().nbytes, None)
+
+
+class ImageUploadTooLarge(Exception):
+    pass
 
 
 class StyledAuthenticationForm(AuthenticationForm):
@@ -240,8 +291,9 @@ def upload_draft_image(request, token_artist):
     image = request.FILES.get('image')
     if image:
         try:
+            image = compress_image_upload(image)
             DraftImage.objects.create(project=project, image=image)
-        except cloudinary.exceptions.Error:
+        except (ImageUploadTooLarge, cloudinary.exceptions.Error):
             return redirect(f'{url}?image_error=1')
 
     return redirect(url)
