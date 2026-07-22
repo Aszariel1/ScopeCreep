@@ -5,7 +5,7 @@ from datetime import timedelta
 import cloudinary.exceptions
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, UserCreationForm
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q, Sum
 from django.http import HttpResponse
@@ -27,6 +27,8 @@ FIELD_CLASS = 'field w-full rounded-lg px-3 py-2 text-gray-100'
 MAX_UPLOAD_SIZE = 5 * 1024 * 1024
 TARGET_IMAGE_SIZE = 1 * 1024 * 1024
 MAX_IMAGE_DIMENSION = 2560
+
+DEMO_PROJECT_NAME = 'Demo Project'
 
 
 def compress_image_upload(image):
@@ -87,6 +89,20 @@ class StyledUserCreationForm(UserCreationForm):
             field.widget.attrs.update({'class': FIELD_CLASS})
 
 
+class StyledPasswordResetForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': FIELD_CLASS})
+
+
+class StyledSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': FIELD_CLASS})
+
+
 def recalculate_project_totals(project):
     accepted = project.change_requests.filter(status__in=ACCEPTED_STATUSES, project_cat__deleted_at__isnull=True)
     totals = accepted.aggregate(price=Sum('extra_cost'), hours=Sum('extra_hours'))
@@ -105,7 +121,7 @@ def recalculate_project_totals(project):
 
 def get_or_create_demo_project():
     project, created = Project.objects.get_or_create(
-        name='Demo Project',
+        name=DEMO_PROJECT_NAME,
         defaults={
             'project_type': Project.ProjectType.GRAPHIC_DESIGN,
             'description': "This is a live demo — click around, request a change, approve one. Nothing here is real client work.",
@@ -186,6 +202,17 @@ def logout_view(request):
 @login_required
 def dashboard(request):
     return render(request, 'projects/dashboard.html', {'projects': request.user.projects.all().order_by('-data_creare')})
+
+
+@login_required
+@require_POST
+def delete_project(request, token_artist):
+    project = get_object_or_404(Project, token_artist=token_artist, owner=request.user)
+    for draft in project.draft_images.all():
+        draft.image.delete(save=False)
+    project.delete()
+
+    return redirect('projects:dashboard')
 
 
 @login_required
@@ -342,12 +369,17 @@ def client_view(request, token_client):
         token_client=token_client,
     )
     categories = [c for c in project.categories.all() if not c.deleted_at]
-    return render(request, 'projects/client_view.html', {'project': project, 'categories': categories})
+    is_demo = project.name == DEMO_PROJECT_NAME
+    return render(request, 'projects/client_view.html', {'project': project, 'categories': categories, 'is_demo': is_demo})
 
 
 @require_POST
 def client_add_change_request(request, token_client, category_id):
     category = get_object_or_404(ProjectCategory, id=category_id, project__token_client=token_client)
+
+    url = reverse('projects:client_view', kwargs={'token_client': token_client})
+    if category.project.name == DEMO_PROJECT_NAME:
+        return redirect(f'{url}?open={category.id}')
 
     ChangeRequest.objects.create(
         project=category.project,
@@ -355,7 +387,6 @@ def client_add_change_request(request, token_client, category_id):
         description=request.POST.get('description', ''),
     )
 
-    url = reverse('projects:client_view', kwargs={'token_client': token_client})
     return redirect(f'{url}?open={category.id}')
 
 
@@ -368,10 +399,11 @@ def client_approve_change_request(request, token_client, change_request_id):
         status=ChangeRequest.Status.PENDING,
         extra_cost__gt=0,
     )
-    change_request.status = ChangeRequest.Status.APPROVED
-    change_request.accepted_at = timezone.now()
-    change_request.save(update_fields=['status', 'accepted_at'])
-    recalculate_project_totals(change_request.project)
+    if change_request.project.name != DEMO_PROJECT_NAME:
+        change_request.status = ChangeRequest.Status.APPROVED
+        change_request.accepted_at = timezone.now()
+        change_request.save(update_fields=['status', 'accepted_at'])
+        recalculate_project_totals(change_request.project)
 
     return redirect(reverse('projects:client_view', kwargs={'token_client': token_client}))
 
@@ -384,6 +416,8 @@ def client_cancel_change_request(request, token_client, change_request_id):
         project__token_client=token_client,
         status=ChangeRequest.Status.PENDING,
     )
+    if change_request.project.name == DEMO_PROJECT_NAME:
+        return redirect(reverse('projects:client_view', kwargs={'token_client': token_client}))
     change_request.delete()
 
     return redirect(reverse('projects:client_view', kwargs={'token_client': token_client}))

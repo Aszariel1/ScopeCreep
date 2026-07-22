@@ -181,6 +181,20 @@ LOGIN_URL = 'projects:login'
 LOGIN_REDIRECT_URL = 'projects:dashboard'
 LOGOUT_REDIRECT_URL = 'projects:landing'
 
+# Password-reset emails. Falls back to printing to the console (local dev,
+# or production until real SMTP creds are set) so the feature never crashes -
+# it just won't actually deliver mail until EMAIL_HOST is configured.
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'contact@stefansuciu.com')
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+
 # Without this, unhandled exceptions vanish silently in production (DEBUG=False
 # drops Django's default console handler and only tries mail_admins, which
 # isn't configured here) - nothing showed up in Render's logs for a 500.

@@ -21,7 +21,10 @@
             <button type="submit" class="btn-primary w-full px-4 py-2 rounded-lg font-medium">Log in</button>
         </form>
 
-        <p class="text-sm text-gray-500 mt-5 text-center">
+        <p class="text-sm text-gray-500 mt-4 text-center">
+            <a href="{% url 'projects:password_reset' %}" class="text-accent hover:underline">Forgot password?</a>
+        </p>
+        <p class="text-sm text-gray-500 mt-2 text-center">
             No account yet? <a href="{% url 'projects:register' %}" class="text-accent hover:underline">Sign up</a>
         </p>
     </div>
