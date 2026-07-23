@@ -32,6 +32,7 @@ urlpatterns = [
     path('new/', views.project_create, name='project_create'),
     path('artist/<uuid:token_artist>/delete/', views.delete_project, name='delete_project'),
     path('artist/<uuid:token_artist>/', views.artist_workspace, name='artist_workspace'),
+    path('artist/<uuid:token_artist>/description/', views.update_project_description, name='update_project_description'),
     path('artist/<uuid:token_artist>/category/add/', views.add_category, name='add_category'),
     path('artist/<uuid:token_artist>/category/<int:category_id>/change-request/', views.add_change_request, name='add_change_request'),
     path('artist/<uuid:token_artist>/category/<int:category_id>/rename/', views.rename_category, name='rename_category'),

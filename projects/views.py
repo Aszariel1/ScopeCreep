@@ -284,6 +284,15 @@ def add_category(request, token_artist):
 
 
 @require_POST
+def update_project_description(request, token_artist):
+    project = get_object_or_404(Project, token_artist=token_artist)
+    project.description = request.POST.get('description', '').strip()
+    project.save(update_fields=['description'])
+
+    return redirect(reverse('projects:artist_workspace', kwargs={'token_artist': token_artist}))
+
+
+@require_POST
 def rename_category(request, token_artist, category_id):
     category = get_object_or_404(ProjectCategory, id=category_id, project__token_artist=token_artist)
 

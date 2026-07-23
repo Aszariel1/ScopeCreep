@@ -246,6 +246,29 @@
         });
     });
 
+    var descriptionEditToggle = document.getElementById('description-edit-toggle');
+    var descriptionDisplay = document.getElementById('description-display');
+    var descriptionEditForm = document.getElementById('description-edit-form');
+    var descriptionEditCancel = document.getElementById('description-edit-cancel');
+
+    function openDescriptionEdit() {
+        descriptionDisplay.classList.add('hidden');
+        descriptionEditForm.classList.remove('hidden');
+        var textarea = descriptionEditForm.querySelector('textarea');
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+
+    function closeDescriptionEdit() {
+        descriptionEditForm.classList.add('hidden');
+        descriptionDisplay.classList.remove('hidden');
+    }
+
+    if (descriptionEditToggle) {
+        descriptionEditToggle.addEventListener('click', openDescriptionEdit);
+        descriptionEditCancel.addEventListener('click', closeDescriptionEdit);
+    }
+
     document.addEventListener('click', function (event) {
         document.querySelectorAll('.category-rename-form, #add-category-form, #notif-panel, #calendar-panel, #deleted-panel, #share-box').forEach(function (f) {
             if (!f.contains(event.target)) f.classList.add('hidden');
