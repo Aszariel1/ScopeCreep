@@ -182,10 +182,18 @@ LOGIN_REDIRECT_URL = 'projects:dashboard'
 LOGOUT_REDIRECT_URL = 'projects:landing'
 
 # Password-reset emails. Falls back to printing to the console (local dev,
-# or production until real SMTP creds are set) so the feature never crashes -
-# it just won't actually deliver mail until EMAIL_HOST is configured.
+# or production until a real backend is configured) so the feature never
+# crashes - it just won't actually deliver mail.
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'contact@stefansuciu.com')
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Resend's HTTPS API, not SMTP: outbound SMTP (port 587) to smtp.resend.com
+# hung indefinitely on Render and got the request's gunicorn worker
+# SIGKILLed, so mail goes through projects.email_backend.ResendAPIBackend
+# instead, which only needs outbound HTTPS.
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+if RESEND_API_KEY:
+    EMAIL_BACKEND = 'projects.email_backend.ResendAPIBackend'
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 if EMAIL_HOST:
@@ -194,6 +202,7 @@ if EMAIL_HOST:
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+    EMAIL_TIMEOUT = 10
 
 # Without this, unhandled exceptions vanish silently in production (DEBUG=False
 # drops Django's default console handler and only tries mail_admins, which
