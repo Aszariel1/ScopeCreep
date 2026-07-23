@@ -15,7 +15,16 @@
             <div>
                 <label class="block text-sm font-medium mb-1 text-gray-300">{{ field.label }}</label>
                 {{ field }}
-                {% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
+                {% if field.help_text %}
+                    {% if field.name == 'password1' %}
+                    <details class="mt-1">
+                        <summary class="text-xs text-gray-600 hover:text-gray-400 cursor-pointer select-none">Password requirements</summary>
+                        <div class="text-xs text-gray-500 mt-1 [&_ul]:list-disc [&_ul]:pl-4 [&_li]:mt-0.5">{{ field.help_text }}</div>
+                    </details>
+                    {% else %}
+                    <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+                    {% endif %}
+                {% endif %}
                 {% if field.errors %}<p class="text-xs text-red-400 mt-1">{{ field.errors.0 }}</p>{% endif %}
             </div>
             {% endfor %}

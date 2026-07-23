@@ -79,16 +79,28 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+_TEMPLATE_LOADERS = [
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            # Django wraps template loaders in a caching loader by default
+            # regardless of DEBUG, so edited templates aren't picked up
+            # without a full server restart. Skip that cache in dev so
+            # `runserver` reflects template edits immediately; production
+            # keeps the cached loader for performance.
+            'loaders': _TEMPLATE_LOADERS if DEBUG else [
+                ('django.template.loaders.cached.Loader', _TEMPLATE_LOADERS),
             ],
         },
     },

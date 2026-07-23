@@ -128,6 +128,24 @@ html {
     background-color: var(--accent);
 }
 
+@media print {
+    body, body *, body *::before, body *::after {
+        color: #1a1a1a !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        border-color: #ddd !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    body { background: #fff !important; }
+    header nav, .no-print { display: none !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;

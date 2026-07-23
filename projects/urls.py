@@ -45,5 +45,4 @@ urlpatterns = [
     path('client/<uuid:token_client>/category/<int:category_id>/change-request/', views.client_add_change_request, name='client_add_change_request'),
     path('client/<uuid:token_client>/change-request/<int:change_request_id>/approve/', views.client_approve_change_request, name='client_approve_change_request'),
     path('client/<uuid:token_client>/change-request/<int:change_request_id>/cancel/', views.client_cancel_change_request, name='client_cancel_change_request'),
-    path('scope/<uuid:token>/export/', views.export_pdf, name='export_pdf'),
 ]

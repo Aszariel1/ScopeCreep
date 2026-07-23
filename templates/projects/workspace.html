@@ -10,11 +10,15 @@
             <p class="text-gray-400">{{ project.get_project_type_display }}</p>
         </div>
         <div class="flex items-start gap-3 shrink-0">
+            {% include "projects/top_actions.html" %}
             <div class="relative">
                 <button type="button" id="share-toggle" class="btn-primary w-9 h-9 rounded-full flex items-center justify-center" title="Share with client">{% include "icons/link.html" with cls="w-4 h-4" %}</button>
-                <div id="share-box" class="hidden absolute right-0 top-full mt-2 z-10 card rounded-lg p-2 flex flex-wrap items-center gap-2 w-64 max-w-[90vw]">
-                    <input type="text" readonly id="share-link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'projects:client_view' project.token_client %}" class="field rounded-lg px-2 py-1 text-xs text-gray-300 flex-1 min-w-0">
-                    <button type="button" id="share-copy" class="btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-200 shrink-0" title="Copy link">{% include "icons/copy.html" with cls="w-3.5 h-3.5" %}</button>
+                <div id="share-box" class="hidden absolute right-0 top-full mt-2 z-10 card rounded-lg p-2 flex flex-col gap-2 w-64 max-w-[90vw]">
+                    <p class="text-xs font-semibold text-gray-400 tracking-wide px-0.5">Share with client</p>
+                    <div class="flex items-center gap-2">
+                        <input type="text" readonly id="share-link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'projects:client_view' project.token_client %}" class="field rounded-lg px-2 py-1 text-xs text-gray-300 flex-1 min-w-0">
+                        <button type="button" id="share-copy" class="btn w-8 h-8 rounded-lg flex items-center justify-center text-gray-200 shrink-0" title="Copy link">{% include "icons/copy.html" with cls="w-3.5 h-3.5" %}</button>
+                    </div>
                 </div>
             </div>
             <div class="text-right">
@@ -48,10 +52,14 @@
                     <span class="category-chevron text-gray-400 transition-transform inline-flex">{% include "icons/chevron-down.html" with cls="w-4 h-4" %}</span>
                 </button>
                 {% endfor %}
+                {% if categories|length > 1 %}
+                <button type="button" class="stack-nav stack-prev btn w-9 h-9 rounded-full flex items-center justify-center text-gray-200" aria-label="Previous category">{% include "icons/chevron-left.html" with cls="w-4 h-4" %}</button>
+                <button type="button" class="stack-nav stack-next btn w-9 h-9 rounded-full flex items-center justify-center text-gray-200" aria-label="Next category">{% include "icons/chevron-right.html" with cls="w-4 h-4" %}</button>
+                {% endif %}
             </div>
         </div>
 
-        <div id="details-row" class="flex items-start gap-3">
+        <div id="details-row" class="flex items-start">
         <div id="details-panel" class="relative min-h-[58px] flex-1 min-w-0">
             <button type="button" id="brief-tab" class="card absolute top-0 left-0 z-10 w-[132px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
                 BRIEF
@@ -71,7 +79,7 @@
                                 <button type="submit" class="btn-primary rounded-lg px-2 py-1 text-xs shrink-0" title="Save">{% include "icons/check.html" with cls="w-3 h-3" %}</button>
                             </form>
                         </div>
-                        <form method="post" action="{% url 'projects:delete_category' project.token_artist category.id %}" onsubmit="return confirm('Delete category &quot;{{ category.category_name }}&quot;? You can restore it later from the trash icon.');">
+                        <form method="post" action="{% url 'projects:delete_category' project.token_artist category.id %}" class="no-print" onsubmit="return confirm('Delete category &quot;{{ category.category_name }}&quot;? You can restore it later from the trash icon.');">
                             {% csrf_token %}
                             <button type="submit" class="btn w-7 h-7 rounded-lg flex items-center justify-center text-red-400" title="Delete category">{% include "icons/trash.html" with cls="w-3.5 h-3.5" %}</button>
                         </form>
@@ -93,6 +101,7 @@
                             {% elif change_request.status == 'reject' %}{% include "icons/x.html" with cls="w-3 h-3" %}
                             {% elif change_request.status == 'archived' %}{% include "icons/archive.html" with cls="w-3 h-3" %}
                             {% endif %}{{ change_request.get_status_display }}
+                            {% include "icons/pencil.html" with cls="w-2.5 h-2.5 opacity-40" %}
                         </button>
                         {% if change_request.artist_note %}
                         <span class="w-full text-xs text-gray-500 italic">{{ change_request.artist_note }}</span>
@@ -102,7 +111,7 @@
                     <p class="text-gray-500 text-sm">No requests yet.</p>
                     {% endfor %}
 
-                    <form method="post" action="{% url 'projects:add_change_request' project.token_artist category.id %}" class="flex flex-wrap gap-2 mt-4">
+                    <form method="post" action="{% url 'projects:add_change_request' project.token_artist category.id %}" class="no-print flex flex-wrap gap-2 mt-4">
                         {% csrf_token %}
                         <input type="text" name="description" placeholder="Request description" required class="field rounded-lg px-3 py-2 text-sm text-gray-100 flex-1 min-w-[140px]">
                         <input type="number" name="extra_cost" placeholder="Cost (EUR)" step="0.01" min="0" class="field rounded-lg px-3 py-2 text-sm text-gray-100 w-28">
@@ -123,22 +132,22 @@
         </div>
 
         <div id="status-panel" class="status-panel relative min-h-[58px] w-0 overflow-hidden shrink-0">
-            <div class="card rounded-xl p-4 w-72 max-w-[80vw] h-full">
-                <div class="flex items-start justify-between gap-2 mb-3">
+            <div class="card rounded-xl p-3 w-64 max-w-[80vw] h-full">
+                <div class="flex items-start justify-between gap-2 mb-2.5">
                     <p id="status-panel-title" class="text-sm text-gray-200 min-w-0 break-words"></p>
-                    <button type="button" id="status-close" class="btn w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 shrink-0" title="Close">{% include "icons/x.html" with cls="w-3.5 h-3.5" %}</button>
+                    <button type="button" id="status-close" class="btn w-6 h-6 rounded-lg flex items-center justify-center text-gray-300 shrink-0" title="Close">{% include "icons/x.html" with cls="w-3 h-3" %}</button>
                 </div>
-                <form method="post" id="status-edit-form" class="flex flex-col gap-3">
+                <form method="post" id="status-edit-form" class="flex flex-col gap-2">
                     {% csrf_token %}
                     <div class="flex gap-2">
-                        <input type="number" name="extra_cost" id="status-edit-cost" step="0.01" min="0" placeholder="Cost (EUR)" class="field rounded-lg px-3 py-2 text-sm text-gray-100 w-1/2">
-                        <input type="number" name="extra_hours" id="status-edit-hours" step="0.01" min="0" placeholder="Hours" class="field rounded-lg px-3 py-2 text-sm text-gray-100 w-1/2">
+                        <input type="number" name="extra_cost" id="status-edit-cost" step="0.01" min="0" placeholder="Cost (EUR)" class="field rounded-lg px-3 py-1.5 text-sm text-gray-100 w-1/2">
+                        <input type="number" name="extra_hours" id="status-edit-hours" step="0.01" min="0" placeholder="Hours" class="field rounded-lg px-3 py-1.5 text-sm text-gray-100 w-1/2">
                     </div>
-                    <input type="text" name="note" id="status-edit-note" maxlength="200" placeholder="Note (optional)" class="field rounded-lg px-3 py-2 text-sm text-gray-100">
-                    <div class="flex flex-col gap-2">
-                        <button type="submit" name="status" value="approved" class="btn rounded-lg px-3 py-2 text-sm text-emerald-400 inline-flex items-center justify-center gap-1.5">{% include "icons/check.html" with cls="w-4 h-4" %}Approve</button>
-                        <button type="submit" name="status" value="reject" class="btn rounded-lg px-3 py-2 text-sm text-red-400 inline-flex items-center justify-center gap-1.5">{% include "icons/x.html" with cls="w-4 h-4" %}Reject</button>
-                        <button type="submit" name="status" value="archived" class="btn rounded-lg px-3 py-2 text-sm text-gray-400 inline-flex items-center justify-center gap-1.5">{% include "icons/archive.html" with cls="w-4 h-4" %}Archive</button>
+                    <input type="text" name="note" id="status-edit-note" maxlength="200" placeholder="Note (optional)" class="field rounded-lg px-3 py-1.5 text-sm text-gray-100">
+                    <div class="flex items-center justify-center gap-2 mt-0.5">
+                        <button type="submit" name="status" value="approved" class="btn w-9 h-9 rounded-full flex items-center justify-center text-emerald-400" title="Approve">{% include "icons/check.html" with cls="w-4 h-4" %}</button>
+                        <button type="submit" name="status" value="reject" class="btn w-9 h-9 rounded-full flex items-center justify-center text-red-400" title="Reject">{% include "icons/x.html" with cls="w-4 h-4" %}</button>
+                        <button type="submit" name="status" value="archived" class="btn w-9 h-9 rounded-full flex items-center justify-center text-gray-400" title="Archive">{% include "icons/archive.html" with cls="w-4 h-4" %}</button>
                     </div>
                 </form>
             </div>
@@ -154,8 +163,8 @@
             <div class="shape-top flare-r mr-[152px] min-h-[66px] px-4 pb-2 flex items-center justify-between gap-2">
                 <p class="text-xs font-semibold text-gray-500 tracking-wider">PROJECT BRIEF</p>
                 <div class="flex items-center gap-1 shrink-0">
-                    <button type="button" id="description-edit-toggle" class="btn w-7 h-7 rounded-lg flex items-center justify-center text-gray-300" title="Edit brief">{% include "icons/pencil.html" with cls="w-3.5 h-3.5" %}</button>
-                    <form method="post" action="{% url 'projects:upload_draft_image' project.token_artist %}" enctype="multipart/form-data" class="shrink-0">
+                    <button type="button" id="description-edit-toggle" class="no-print btn w-7 h-7 rounded-lg flex items-center justify-center text-gray-300" title="Edit brief">{% include "icons/pencil.html" with cls="w-3.5 h-3.5" %}</button>
+                    <form method="post" action="{% url 'projects:upload_draft_image' project.token_artist %}" enctype="multipart/form-data" class="no-print shrink-0">
                         {% csrf_token %}
                         <label class="btn w-7 h-7 rounded-full flex items-center justify-center text-gray-200 cursor-pointer" title="Add image">
                             {% include "icons/plus.html" with cls="w-3.5 h-3.5" %}
@@ -169,9 +178,9 @@
                 <p id="image-error" class="text-xs text-red-400 mb-3">File size is too big, please upload images smaller than 5 MB.</p>
                 {% endif %}
                 <p id="description-display" class="text-sm mb-4 whitespace-pre-line{% if project.description %} text-gray-300{% else %} text-gray-600 italic{% endif %}">{% if project.description %}{{ project.description }}{% else %}No description.{% endif %}</p>
-                <form method="post" action="{% url 'projects:update_project_description' project.token_artist %}" id="description-edit-form" class="hidden mb-4">
+                <form method="post" action="{% url 'projects:update_project_description' project.token_artist %}" id="description-edit-form" class="no-print hidden mb-4">
                     {% csrf_token %}
-                    <textarea name="description" rows="4" placeholder="Describe the project scope, goals, and any constraints..." class="field w-full rounded-lg px-3 py-2 text-sm text-gray-100 resize-none">{{ project.description }}</textarea>
+                    <textarea name="description" rows="4" placeholder="Describe the project scope, goals, and any constraints..." class="field w-full rounded-lg px-3 py-2 text-sm text-gray-100 resize-none overflow-hidden">{{ project.description }}</textarea>
                     <div class="flex justify-end gap-2 mt-2">
                         <button type="button" id="description-edit-cancel" class="btn rounded-lg px-3 py-1.5 text-xs text-gray-300">Cancel</button>
                         <button type="submit" class="btn-primary rounded-lg px-3 py-1.5 text-xs inline-flex items-center gap-1">{% include "icons/check.html" with cls="w-3 h-3" %}Save</button>
@@ -184,7 +193,7 @@
                         <button type="button" class="artboard-thumb w-full h-full rounded-lg overflow-hidden border border-white/10" data-full="{{ draft.image.url }}">
                             <img src="{{ draft.image.url }}" alt="" class="w-full h-full object-cover">
                         </button>
-                        <form method="post" action="{% url 'projects:delete_draft_image' project.token_artist draft.id %}" class="absolute top-1 right-1" onsubmit="return confirm('Delete this image?');">
+                        <form method="post" action="{% url 'projects:delete_draft_image' project.token_artist draft.id %}" class="no-print absolute top-1 right-1" onsubmit="return confirm('Delete this image?');">
                             {% csrf_token %}
                             <button type="submit" class="btn w-6 h-6 rounded-full flex items-center justify-center text-red-400 bg-black/50" title="Delete image">{% include "icons/trash.html" with cls="w-3 h-3" %}</button>
                         </form>

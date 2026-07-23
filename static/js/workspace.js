@@ -235,6 +235,20 @@
         });
     }
 
+    var stackPrev = document.querySelector('.stack-prev');
+    var stackNext = document.querySelector('.stack-next');
+
+    function step(delta) {
+        if (!count) return;
+        current = wrap(current + delta);
+        logCollapsed = false;
+        render(true);
+        measureHeight();
+    }
+
+    if (stackPrev) stackPrev.addEventListener('click', function (event) { event.stopPropagation(); step(-1); });
+    if (stackNext) stackNext.addEventListener('click', function (event) { event.stopPropagation(); step(1); });
+
     document.querySelectorAll('.category-rename-toggle').forEach(function (toggle) {
         toggle.addEventListener('click', function (event) {
             event.stopPropagation();
@@ -251,17 +265,28 @@
     var descriptionEditForm = document.getElementById('description-edit-form');
     var descriptionEditCancel = document.getElementById('description-edit-cancel');
 
+    function autoResizeTextarea(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+    }
+
     function openDescriptionEdit() {
         descriptionDisplay.classList.add('hidden');
         descriptionEditForm.classList.remove('hidden');
         var textarea = descriptionEditForm.querySelector('textarea');
         textarea.focus();
         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        autoResizeTextarea(textarea);
     }
 
     function closeDescriptionEdit() {
         descriptionEditForm.classList.add('hidden');
         descriptionDisplay.classList.remove('hidden');
+    }
+
+    var descriptionTextarea = descriptionEditForm ? descriptionEditForm.querySelector('textarea') : null;
+    if (descriptionTextarea) {
+        descriptionTextarea.addEventListener('input', function () { autoResizeTextarea(descriptionTextarea); });
     }
 
     if (descriptionEditToggle) {
@@ -308,6 +333,13 @@
         deletedToggle.addEventListener('click', function (event) {
             event.stopPropagation();
             toggleExclusive(deletedPanel);
+        });
+    }
+
+    var printBtn = document.getElementById('print-btn');
+    if (printBtn) {
+        printBtn.addEventListener('click', function () {
+            window.print();
         });
     }
 

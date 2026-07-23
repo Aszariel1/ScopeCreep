@@ -7,15 +7,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, UserCreationForm
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.db.models import Q, Sum
-from django.http import HttpResponse
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from PIL import Image
-from xhtml2pdf import pisa
 
 from .models import ChangeRequest, DraftImage, Project, ProjectCategory
 
@@ -430,17 +427,3 @@ def client_cancel_change_request(request, token_client, change_request_id):
     change_request.delete()
 
     return redirect(reverse('projects:client_view', kwargs={'token_client': token_client}))
-
-
-def export_pdf(request, token):
-    project = get_object_or_404(
-        Project.objects.prefetch_related('categories__change_requests'),
-        Q(token_artist=token) | Q(token_client=token),
-    )
-
-    categories = [c for c in project.categories.all() if not c.deleted_at]
-    html = render_to_string('projects/pdf_export.html', {'project': project, 'categories': categories})
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="{project.name}-scope.pdf"'
-    pisa.CreatePDF(html, dest=response)
-    return response
