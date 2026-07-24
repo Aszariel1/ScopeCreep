@@ -37,19 +37,19 @@
         return diff - dragProgress;
     }
 
-    function peekFactor() {
+    function peekFactor(knownWidth) {
         if (!stackWrap || !stackCards.length) return 0.19;
-        var width = stackWrap.offsetWidth;
+        var width = knownWidth !== undefined ? knownWidth : stackWrap.offsetWidth;
         var cardWidth = stackCards[0].offsetWidth;
         return width > 0 ? Math.max(0, (width - cardWidth) / 2) / width : 0.19;
     }
 
-    function render(animated) {
-        var factor = peekFactor();
+    function render(animated, knownWidth, knownFactor) {
+        var width = knownWidth !== undefined ? knownWidth : stackWrap.offsetWidth;
+        var factor = knownFactor !== undefined ? knownFactor : peekFactor(width);
         stackCards.forEach(function (card, i) {
             var offset = shortestOffset(i);
             var clamped = Math.max(-1, Math.min(1, offset));
-            var width = stackWrap.offsetWidth;
             var translateX = clamped * width * factor;
             var isActive = Math.abs(offset) < 0.5;
             var proximity = Math.max(0, 1 - Math.max(0, Math.abs(offset) - 1));
@@ -129,11 +129,12 @@
         if (statusPanel) statusPanel.classList.remove('is-open');
     }
 
-    document.querySelectorAll('.status-toggle').forEach(function (toggle) {
-        toggle.addEventListener('click', function (event) {
+    document.addEventListener('click', function (event) {
+        var toggle = event.target.closest('.status-toggle');
+        if (toggle) {
             event.stopPropagation();
             openStatusPanel(toggle);
-        });
+        }
     });
 
     if (statusClose) statusClose.addEventListener('click', closeStatusPanel);
@@ -185,8 +186,10 @@
                 axisLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
             }
             if (axisLocked !== 'x') return;
-            dragProgress = dragStartProgress - dx / (stackWrap.offsetWidth * peekFactor());
-            render(false);
+            var width = stackWrap.offsetWidth;
+            var factor = peekFactor(width);
+            dragProgress = dragStartProgress - dx / (width * factor);
+            render(false, width, factor);
         });
 
         function endDrag(event) {
@@ -249,15 +252,15 @@
     if (stackPrev) stackPrev.addEventListener('click', function (event) { event.stopPropagation(); step(-1); });
     if (stackNext) stackNext.addEventListener('click', function (event) { event.stopPropagation(); step(1); });
 
-    document.querySelectorAll('.category-rename-toggle').forEach(function (toggle) {
-        toggle.addEventListener('click', function (event) {
-            event.stopPropagation();
-            var form = toggle.parentElement.querySelector('.category-rename-form');
-            document.querySelectorAll('.category-rename-form').forEach(function (f) {
-                if (f !== form) f.classList.add('hidden');
-            });
-            form.classList.toggle('hidden');
+    document.addEventListener('click', function (event) {
+        var toggle = event.target.closest('.category-rename-toggle');
+        if (!toggle) return;
+        event.stopImmediatePropagation();
+        var form = toggle.parentElement.querySelector('.category-rename-form');
+        document.querySelectorAll('.category-rename-form').forEach(function (f) {
+            if (f !== form) f.classList.add('hidden');
         });
+        form.classList.toggle('hidden');
     });
 
     var descriptionEditToggle = document.getElementById('description-edit-toggle');
@@ -397,10 +400,9 @@
         lightboxImg.src = '';
     }
 
-    document.querySelectorAll('.artboard-thumb').forEach(function (thumb) {
-        thumb.addEventListener('click', function () {
-            openLightbox(thumb.dataset.full);
-        });
+    document.addEventListener('click', function (event) {
+        var thumb = event.target.closest('.artboard-thumb');
+        if (thumb) openLightbox(thumb.dataset.full);
     });
 
     if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);

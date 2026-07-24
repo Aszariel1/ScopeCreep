@@ -12,8 +12,8 @@
         <div class="flex items-start gap-3 shrink-0">
             {% include "projects/top_actions.html" %}
             <div class="relative">
-                <button type="button" id="share-toggle" class="btn-primary w-9 h-9 rounded-full flex items-center justify-center" title="Share with client">{% include "icons/link.html" with cls="w-4 h-4" %}</button>
-                <div id="share-box" class="hidden absolute right-0 top-full mt-2 z-10 card rounded-lg p-2 flex flex-col gap-2 w-64 max-w-[90vw]">
+                <button type="button" id="share-toggle" class="no-print btn-primary w-9 h-9 rounded-full flex items-center justify-center" title="Share with client">{% include "icons/link.html" with cls="w-4 h-4" %}</button>
+                <div id="share-box" class="no-print hidden absolute right-0 top-full mt-2 z-10 card rounded-lg p-2 flex flex-col gap-2 w-64 max-w-[90vw]">
                     <p class="text-xs font-semibold text-gray-400 tracking-wide px-0.5">Share with client</p>
                     <div class="flex items-center gap-2">
                         <input type="text" readonly id="share-link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'projects:client_view' project.token_client %}" class="field rounded-lg px-2 py-1 text-xs text-gray-300 flex-1 min-w-0">
@@ -31,15 +31,15 @@
     <div class="mb-10">
         <div class="relative mb-4">
             <div class="absolute top-3 right-3 z-[200]">
-                <button type="button" id="add-category-toggle" class="btn w-8 h-8 rounded-full flex items-center justify-center text-gray-200" title="Add category">{% include "icons/plus.html" with cls="w-4 h-4" %}</button>
-                <form id="add-category-form" method="post" action="{% url 'projects:add_category' project.token_artist %}" class="hidden absolute right-0 top-full mt-1 card rounded-lg p-2 flex gap-2 w-56 max-w-[90vw]">
+                <button type="button" id="add-category-toggle" class="no-print btn w-8 h-8 rounded-full flex items-center justify-center text-gray-200" title="Add category">{% include "icons/plus.html" with cls="w-4 h-4" %}</button>
+                <form id="add-category-form" method="post" action="{% url 'projects:add_category' project.token_artist %}" class="no-print hidden absolute right-0 top-full mt-1 card rounded-lg p-2 flex gap-2 w-56 max-w-[90vw]">
                     {% csrf_token %}
                     <input type="text" name="category_name" placeholder="Category name" required class="field rounded-lg px-2 py-1 text-xs text-gray-100 flex-1">
                     <button type="submit" class="btn-primary rounded-lg px-2 py-1 text-xs shrink-0" title="Add category">{% include "icons/plus.html" with cls="w-3 h-3" %}</button>
                 </form>
             </div>
 
-            <div class="stack-viewport relative overflow-hidden" id="category-stack">
+            <div class="no-print stack-viewport relative overflow-hidden" id="category-stack">
                 {% for category in categories %}
                 <button type="button" class="stack-card category-card card rounded-xl px-4 py-6 text-left flex items-center justify-between" data-category-id="{{ category.id }}" data-index="{{ forloop.counter0 }}">
                     <span>
@@ -63,7 +63,7 @@
 
         <div id="details-row" class="flex items-start">
         <div id="details-panel" class="relative min-h-[58px] flex-1 min-w-0">
-            <button type="button" id="brief-tab" class="card absolute top-0 left-0 z-10 w-[132px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
+            <button type="button" id="brief-tab" class="no-print card absolute top-0 left-0 z-10 w-[132px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
                 BRIEF
                 <span class="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-gray-300 shrink-0">{% include "icons/chevron-right.html" with cls="w-3.5 h-3.5" %}</span>
             </button>
@@ -73,7 +73,7 @@
                 <div class="shape-top flare-l ml-[144px] min-h-[66px] px-4 pb-2 flex items-center justify-between gap-2">
                     <h2 class="text-sm font-semibold text-gray-100 truncate">{{ category.category_name }}</h2>
                     <div class="flex items-center gap-1 shrink-0">
-                        <div class="category-rename-wrap relative">
+                        <div class="no-print category-rename-wrap relative">
                             <button type="button" class="category-rename-toggle btn w-7 h-7 rounded-lg flex items-center justify-center text-gray-300" title="Rename">{% include "icons/pencil.html" with cls="w-3.5 h-3.5" %}</button>
                             <form method="post" action="{% url 'projects:rename_category' project.token_artist category.id %}" class="category-rename-form hidden absolute right-0 top-full mt-1 z-10 card rounded-lg p-2 flex gap-2 w-56 max-w-[90vw]">
                                 {% csrf_token %}
@@ -133,7 +133,7 @@
             {% endif %}
         </div>
 
-        <div id="status-panel" class="status-panel relative min-h-[58px] w-0 overflow-hidden shrink-0">
+        <div id="status-panel" class="no-print status-panel relative min-h-[58px] w-0 overflow-hidden shrink-0">
             <div class="card rounded-xl p-3 w-64 max-w-[80vw] h-full">
                 <div class="flex items-start justify-between gap-2 mb-2.5">
                     <p id="status-panel-title" class="text-sm text-gray-200 min-w-0 break-words"></p>
@@ -157,7 +157,7 @@
         </div>
 
         <div id="brief-panel" class="hidden relative min-h-[58px]">
-            <button type="button" id="details-tab" class="card absolute top-0 right-0 z-10 w-[140px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
+            <button type="button" id="details-tab" class="no-print card absolute top-0 right-0 z-10 w-[140px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
                 <span class="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-gray-300 shrink-0">{% include "icons/chevron-left.html" with cls="w-3.5 h-3.5" %}</span>
                 DETAILS
             </button>
@@ -211,7 +211,7 @@
     </div>
 </div>
 
-<div id="lightbox" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-6">
+<div id="lightbox" class="no-print hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-6">
     <button type="button" id="lightbox-close" class="btn absolute top-4 right-4 w-9 h-9 rounded-full text-gray-100 flex items-center justify-center">{% include "icons/x.html" with cls="w-4 h-4" %}</button>
     <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full rounded-lg">
 </div>

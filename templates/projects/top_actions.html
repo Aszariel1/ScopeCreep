@@ -1,5 +1,5 @@
 {% with pending=project.pending_count %}
-<div class="relative">
+<div class="no-print relative">
     <button type="button" id="notif-toggle" class="btn w-10 h-10 rounded-full flex items-center justify-center text-gray-300 relative" title="Notifications">
         {% include "icons/bell.html" with cls="w-4 h-4" %}
         {% if pending > 0 %}
@@ -21,7 +21,7 @@
 </div>
 {% endwith %}
 
-<div class="relative">
+<div class="no-print relative">
     <button type="button" id="calendar-toggle" class="btn w-10 h-10 rounded-full flex items-center justify-center text-gray-300" title="Completion estimate">
         {% include "icons/calendar.html" with cls="w-4 h-4" %}
     </button>
@@ -36,6 +36,6 @@
     </div>
 </div>
 
-<button type="button" id="print-btn" class="btn w-10 h-10 rounded-full flex items-center justify-center text-gray-300" title="Print / Save as PDF">
-    {% include "icons/file-text.html" with cls="w-4 h-4" %}
+<button type="button" id="print-btn" class="no-print btn w-10 h-10 rounded-full flex items-center justify-center text-gray-300" title="Print / Save as PDF">
+    {% include "icons/printer.html" with cls="w-4 h-4" %}
 </button>

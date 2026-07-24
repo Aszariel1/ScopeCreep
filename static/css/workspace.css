@@ -225,10 +225,7 @@
 .stack-nav.stack-next { right: 4px; }
 
 @media print {
-    #category-stack, #brief-tab, #details-tab, #status-panel, #lightbox,
-    #share-toggle, #share-box, #add-category-toggle, #add-category-form,
-    #notif-toggle, #notif-panel, #calendar-toggle, #calendar-panel, #print-btn,
-    .category-rename-wrap, .no-print {
+    .no-print {
         display: none !important;
     }
 }

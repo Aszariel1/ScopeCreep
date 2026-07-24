@@ -20,7 +20,7 @@
 
     <div class="mb-10">
         <div class="relative mb-4">
-            <div class="stack-viewport relative overflow-hidden" id="category-stack">
+            <div class="no-print stack-viewport relative overflow-hidden" id="category-stack">
                 {% for category in categories %}
                 <button type="button" class="stack-card category-card card rounded-xl px-4 py-6 text-left flex items-center justify-between" data-category-id="{{ category.id }}" data-index="{{ forloop.counter0 }}">
                     <span>
@@ -44,7 +44,7 @@
 
         <div id="details-row" class="flex items-start gap-3">
         <div id="details-panel" class="relative min-h-[58px] flex-1 min-w-0">
-            <button type="button" id="brief-tab" class="card absolute top-0 left-0 z-10 w-[132px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
+            <button type="button" id="brief-tab" class="no-print card absolute top-0 left-0 z-10 w-[132px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
                 BRIEF
                 <span class="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-gray-300 shrink-0">{% include "icons/chevron-right.html" with cls="w-3.5 h-3.5" %}</span>
             </button>
@@ -98,7 +98,7 @@
         </div>
 
         <div id="brief-panel" class="hidden relative min-h-[58px]">
-            <button type="button" id="details-tab" class="card absolute top-0 right-0 z-10 w-[140px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
+            <button type="button" id="details-tab" class="no-print card absolute top-0 right-0 z-10 w-[140px] h-[58px] rounded-xl px-4 flex items-center justify-between text-gray-500 text-xs font-semibold tracking-widest">
                 <span class="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-gray-300 shrink-0">{% include "icons/chevron-left.html" with cls="w-3.5 h-3.5" %}</span>
                 DETAILS
             </button>
@@ -129,7 +129,7 @@
     </div>
 </div>
 
-<div id="lightbox" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-6">
+<div id="lightbox" class="no-print hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-6">
     <button type="button" id="lightbox-close" class="btn absolute top-4 right-4 w-9 h-9 rounded-full text-gray-100 flex items-center justify-center">{% include "icons/x.html" with cls="w-4 h-4" %}</button>
     <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full rounded-lg">
 </div>
