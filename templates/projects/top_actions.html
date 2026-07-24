@@ -1,23 +1,25 @@
+{% with pending=project.pending_count %}
 <div class="relative">
     <button type="button" id="notif-toggle" class="btn w-10 h-10 rounded-full flex items-center justify-center text-gray-300 relative" title="Notifications">
         {% include "icons/bell.html" with cls="w-4 h-4" %}
-        {% if project.pending_count > 0 %}
-        <span class="num absolute -top-0.5 -right-0.5 bg-accent text-white text-[10px] leading-none rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">{{ project.pending_count }}</span>
+        {% if pending > 0 %}
+        <span class="num absolute -top-0.5 -right-0.5 bg-accent text-white text-[10px] leading-none rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">{{ pending }}</span>
         {% endif %}
     </button>
     <div id="notif-panel" class="hidden absolute right-0 top-full mt-2 z-10 card rounded-lg p-3 w-56 max-w-[90vw] text-sm text-gray-200">
         <p class="text-xs font-semibold text-gray-500 tracking-wider mb-2">NOTIFICATIONS</p>
-        {% if project.pending_count > 0 %}
-            {% if project.pending_count == 1 %}
+        {% if pending > 0 %}
+            {% if pending == 1 %}
             <p><span class="font-medium text-white">1</span> pending request</p>
             {% else %}
-            <p><span class="font-medium text-white">{{ project.pending_count }}</span> pending requests</p>
+            <p><span class="font-medium text-white">{{ pending }}</span> pending requests</p>
             {% endif %}
         {% else %}
             <p class="text-gray-500 italic">No pending requests.</p>
         {% endif %}
     </div>
 </div>
+{% endwith %}
 
 <div class="relative">
     <button type="button" id="calendar-toggle" class="btn w-10 h-10 rounded-full flex items-center justify-center text-gray-300" title="Completion estimate">

@@ -25,7 +25,9 @@
                 <button type="button" class="stack-card category-card card rounded-xl px-4 py-6 text-left flex items-center justify-between" data-category-id="{{ category.id }}" data-index="{{ forloop.counter0 }}">
                     <span>
                         <span class="font-semibold text-white">{{ category.category_name }}</span>
-                        <span id="cat-count-{{ category.id }}" class="block text-xs text-gray-400 mt-1" data-value="{{ category.change_requests.count }}">{{ category.change_requests.count }} request{{ category.change_requests.count|pluralize }}</span>
+                        {% with count=category.change_requests.all|length %}
+                        <span id="cat-count-{{ category.id }}" class="block text-xs text-gray-400 mt-1" data-value="{{ count }}">{{ count }} request{{ count|pluralize }}</span>
+                        {% endwith %}
                         {% with totals=category.approved_totals %}
                         <span class="num block text-xs font-semibold mt-2"><span id="cat-cost-{{ category.id }}" class="text-emerald-400" data-value="{{ totals.cost }}">{{ totals.cost|floatformat:"-2" }} eur</span> <span class="text-gray-600">/</span> <span id="cat-hours-{{ category.id }}" class="text-sky-400" data-value="{{ totals.hours }}">{{ totals.hours|floatformat:"-2" }} h</span></span>
                         {% endwith %}
